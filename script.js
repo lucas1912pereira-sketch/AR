@@ -8,7 +8,7 @@ const menuItems = [
         nombre: "Torta de Frutilla Artesanal",
         precio: "$4.50",
         descripcion: "Exquisita torta con una suave cubierta y detalles irresistibles.",
-        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Cake/glTF-Binary/Cake.glb",
+        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
         modeloUsdz: "", 
         poster: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
@@ -17,7 +17,7 @@ const menuItems = [
         nombre: "Corte de Bife Grillado",
         precio: "$14.00",
         descripcion: "Un jugoso corte de bife a la parrilla, ideal para los amantes de la buena carne.",
-        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/RibeyeSteak/glTF-Binary/RibeyeSteak.glb",
+        modeloGlb: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
         modeloUsdz: "", 
         poster: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
@@ -26,7 +26,7 @@ const menuItems = [
         nombre: "Lata de Refresco Fría",
         precio: "$2.00",
         descripcion: "Bebida refrescante clásica para acompañar tu comida.",
-        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/SodaCan/glTF-Binary/SodaCan.glb",
+        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb",
         modeloUsdz: "",
         poster: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     }
