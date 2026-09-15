@@ -18,7 +18,7 @@
 <body>
     <!-- Banner informativo para usuarios de escritorio -->
     <div id="desktop-warning" class="desktop-warning hidden">
-        <p>📱 Abre este enlace desde tu celular para probar la Realidad Aumentada</p>
+        <p>📱 Abre este enlace desde tu celular para probar la Realidad Aumentada en tu mesa</p>
     </div>
 
     <header>
@@ -37,45 +37,54 @@
         <!-- Las tarjetas de los platos se generarán dinámicamente mediante script.js -->
     </main>
 
-    <!-- Modal para el visor 3D/AR -->
-    <div id="ar-modal" class="modal hidden">
-        <div class="modal-content">
-            <button id="close-modal" class="close-btn" aria-label="Cerrar visor AR">&times;</button>
+    <!-- Modal 3D Interactivo para inspección previa a la AR -->
+    <div id="modal-visor-3d" class="modal-3d hidden">
+        <div class="modal-3d-content">
+            <!-- Botón Cerrar -->
+            <button id="close-modal-3d" class="close-3d-btn" aria-label="Cerrar visor 3D">&times;</button>
             
-            <!-- 
-              Configuración óptima de model-viewer para máxima inmersión:
-              ar-modes: Prioriza WebXR para una experiencia directa y limpia en Android.
-              environment-image="neutral": Balancea la luz y evita colores quemados o raros.
-              shadow-intensity y shadow-softness: Generan una sombra realista que ancla el modelo al piso/mesa.
-              ar-scale="auto": Mantiene proporciones naturales o se auto-escala según convenga.
-            -->
-            <model-viewer 
-                id="ar-viewer"
-                src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
-                ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
-                poster=""
-                alt="Modelo 3D del platillo seleccionado"
-                ar
-                ar-modes="webxr scene-viewer quick-look"
-                ar-scale="fixed"
-                ar-placement="floor"
-                camera-controls
-                touch-action="pan-y"
-                auto-rotate
-                environment-image="neutral"
-                shadow-intensity="1"
-                shadow-softness="0.8"
-                exposure="1.1"
-                interaction-prompt="none">
-                
-                <button slot="ar-button" id="ar-button" class="btn-ar-slot" style="display: none;">
-                    🍽️ Ver en tu mesa
-                </button>
-                
-                <div id="ar-prompt">
-                    <img src="https://modelviewer.dev/shared-assets/icons/hand.png" alt="Mueve el teléfono para posicionar">
+            <!-- Encabezado del plato -->
+            <div class="modal-3d-header">
+                <h2 id="modal-3d-title">Nombre del Plato</h2>
+                <span id="modal-3d-price">Gs. 0</span>
+            </div>
+
+            <!-- Contenedor del Visor 3D -->
+            <div class="model-viewer-container">
+                <!-- Loader visible mientras se descarga el modelo .glb -->
+                <div id="model-loader" class="model-loader">
+                    <div class="spinner"></div>
+                    <p>Cargando modelo 3D...</p>
                 </div>
-            </model-viewer>
+
+                <!-- Configuración optimizada de model-viewer -->
+                <model-viewer 
+                    id="ar-viewer"
+                    src="" 
+                    alt="Modelo 3D del platillo seleccionado"
+                    ar
+                    ar-modes="webxr scene-viewer quick-look"
+                    camera-controls
+                    auto-rotate
+                    environment-image="neutral"
+                    shadow-intensity="1"
+                    shadow-softness="0.8"
+                    exposure="1.1"
+                    interaction-prompt="none">
+                </model-viewer>
+            </div>
+
+            <!-- Acciones (AR y WhatsApp) -->
+            <div class="modal-3d-actions">
+                <button id="btn-activate-ar" class="btn-ar-primary">
+                    ✨ Proyectar en tu mesa (AR)
+                </button>
+                <p class="ar-helper-text">Te pediremos permiso para usar tu cámara y colocar el plato en tu mesa real.</p>
+                
+                <button id="btn-modal-delivery" class="btn-delivery-secondary">
+                    💬 Pedir este plato por WhatsApp
+                </button>
+            </div>
         </div>
     </div>
 

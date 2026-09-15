@@ -157,7 +157,7 @@ main {
     border-radius: 12px;
 }
 
-/* Cards (Nuevas Clases) */
+/* Cards */
 .plato-card {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
@@ -291,7 +291,7 @@ main {
 }
 
 .btn-ar::before {
-    content: "✨";
+    content: "🔎";
 }
 
 .btn-delivery {
@@ -314,132 +314,223 @@ main {
     transform: scale(0.97);
 }
 
-/* Modal Visor AR */
-.modal {
+/* ==============================================================
+   NUEVO MODAL VISOR 3D (UX MEJORADA)
+   ============================================================== */
+.modal-3d {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.85);
+    background-color: rgba(0,0,0,0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    z-index: 100;
+    z-index: 1000;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end; /* Bottom sheet en móviles por defecto */
     opacity: 1;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s ease;
 }
 
-.modal.hidden {
+.modal-3d.hidden {
     opacity: 0;
     pointer-events: none;
 }
 
-.modal-content {
+.modal-3d-content {
     width: 100%;
-    height: 100%;
+    height: 85%; /* Ocupa casi toda la pantalla en móvil */
+    background-color: var(--bg-color);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    display: flex;
+    flex-direction: column;
     position: relative;
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: #000;
+    overflow: hidden;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.close-btn {
+.modal-3d.hidden .modal-3d-content {
+    transform: translateY(100%);
+}
+
+@media (min-width: 768px) {
+    .modal-3d {
+        align-items: center; /* Centrado en desktop */
+    }
+    .modal-3d-content {
+        height: 90vh;
+        max-width: 550px;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .modal-3d.hidden .modal-3d-content {
+        transform: translateY(20px) scale(0.95);
+    }
+}
+
+/* Botón cerrar modal */
+.close-3d-btn {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: rgba(255,255,255,0.2);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    width: 48px;
-    height: 48px;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid rgba(128,128,128,0.2);
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 10;
-    backdrop-filter: blur(8px);
+    z-index: 20;
+    box-shadow: var(--shadow-sm);
     transition: var(--transition);
 }
 
-.close-btn:hover {
-    background: rgba(255,255,255,0.3);
-    transform: scale(1.1);
+.close-3d-btn:hover {
+    transform: scale(1.05);
+    background: #e0e0e0;
 }
 
-/* Configuraciones de Model Viewer */
+@media (prefers-color-scheme: dark) {
+    .close-3d-btn:hover { background: #333; }
+}
+
+/* Header del Modal */
+.modal-3d-header {
+    padding: 1.5rem 4rem 1rem 1.5rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid rgba(128,128,128,0.1);
+    z-index: 10;
+}
+
+.modal-3d-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.modal-3d-header span {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Contenedor del visor y loader */
+.model-viewer-container {
+    flex-grow: 1;
+    position: relative;
+    background: radial-gradient(circle at center, var(--card-bg) 0%, var(--bg-color) 100%);
+    overflow: hidden;
+}
+
+/* Loader animado */
+.model-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(var(--bg-color), 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 5;
+    gap: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.spinner {
+    width: 45px;
+    height: 45px;
+    border: 4px solid rgba(128,128,128,0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* El elemento model-viewer en sí */
 model-viewer {
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: transparent;
     --poster-color: transparent;
+    /* touch-action: none es importante para que el usuario pueda interactuar con el 3D sin hacer scroll en la página */
+    touch-action: none; 
 }
 
-/* Botón AR nativo dentro del slot de model-viewer */
-.btn-ar-slot {
-    background-color: var(--primary-color);
+/* Acciones inferiores */
+.modal-3d-actions {
+    padding: 1.5rem;
+    background-color: var(--card-bg);
+    border-top: 1px solid rgba(128,128,128,0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.btn-ar-primary {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
     color: white;
-    border-radius: 28px;
     border: none;
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 16px 32px;
-    font-family: var(--font-family);
+    padding: 1.1rem;
+    border-radius: 16px;
     font-weight: 700;
     font-size: 1.1rem;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.4);
     transition: var(--transition);
 }
 
-.btn-ar-slot:hover {
-    transform: translateX(-50%) translateY(-3px);
-    background-color: var(--primary-hover);
+.btn-ar-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
 }
 
-.btn-ar-slot:active {
-    transform: translateX(-50%) scale(0.95);
+.btn-ar-primary:active {
+    transform: scale(0.97);
 }
 
-#ar-prompt {
-    position: absolute;
-    left: 50%;
-    bottom: 175px;
-    animation: notify 4s ease-in-out infinite;
-    display: none;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+.ar-helper-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
 }
 
-@keyframes notify {
-    0% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-15px); }
-    100% { transform: translateX(-50%) translateY(0); }
+.btn-delivery-secondary {
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    padding: 0.9rem;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
-model-viewer[ar-status="session-started"] > #ar-prompt {
-    display: block;
+.btn-delivery-secondary:hover {
+    background-color: rgba(46, 213, 115, 0.1);
 }
 
-/* Si es un dispositivo de escritorio (no táctil fino), ajustar UI de AR */
-@media (hover: hover) and (pointer: fine) {
-    .btn-ar {
-        background-color: var(--text-secondary);
-        box-shadow: none;
-        opacity: 0.8;
-    }
-    
-    .btn-ar:hover {
-        background-color: var(--text-primary);
-        cursor: not-allowed;
-    }
+.btn-delivery-secondary:active {
+    transform: scale(0.98);
 }

@@ -3,28 +3,31 @@ const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
 
 document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
-    const arModal = document.getElementById('ar-modal');
+    const modal3D = document.getElementById('modal-visor-3d');
     const arViewer = document.getElementById('ar-viewer');
-    const arButton = document.getElementById('ar-button');
-    const closeModalBtn = document.getElementById('close-modal');
+    const modelLoader = document.getElementById('model-loader');
+    
+    const closeModalBtn = document.getElementById('close-modal-3d');
     const desktopWarning = document.getElementById('desktop-warning');
+    
+    const modalTitle = document.getElementById('modal-3d-title');
+    const modalPrice = document.getElementById('modal-3d-price');
+    const btnActivateAR = document.getElementById('btn-activate-ar');
+    const btnModalDelivery = document.getElementById('btn-modal-delivery');
 
-    // Solo mostrar el botón si el dispositivo realmente soporta AR
-    if (arViewer) {
-        arViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'failed') {
-                console.log('AR no soportado en este equipo');
-                arButton.style.display = 'none';
-            } else {
-                arButton.style.display = 'block';
-            }
-        });
-    }
-
-    // Detección básica de móvil para mostrar el banner en Desktop
+    // Detección básica de móvil para advertir en Desktop
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (!isMobile && desktopWarning) {
         desktopWarning.classList.remove('hidden');
+    }
+
+    // Comprobar si el AR está soportado (opcional, para ocultar botón si falla completamente)
+    if (arViewer) {
+        arViewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'failed') {
+                console.warn('AR no soportado o fallido en este equipo');
+            }
+        });
     }
 
     async function cargarMenu() {
@@ -71,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="plato-acciones">
                     ${plato.es_ar === 1 ? `
-                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-nombre="${plato.nombre}">
-                        Ver en tu mesa
+                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-nombre="${plato.nombre}" data-precio="${precioGs}">
+                        Inspeccionar en 3D
                         </button>
                     ` : ''}
                     
@@ -86,18 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
             menuContainer.appendChild(tarjeta);
         });
 
-        // Asignar eventos a los botones recién creados
+        // Asignar eventos a los botones de 3D
         document.querySelectorAll('.btn-ar').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                if (!isMobile) {
-                    alert("Para probar la funcionalidad AR completa, debes abrir esta página desde un dispositivo móvil.");
-                }
                 const modeloUrl = e.currentTarget.getAttribute('data-modelo');
                 const nombre = e.currentTarget.getAttribute('data-nombre');
-                abrirVisorAR(modeloUrl, nombre);
+                const precio = e.currentTarget.getAttribute('data-precio');
+                abrirVisor3D(modeloUrl, nombre, precio);
             });
         });
 
+        // Asignar eventos a botones de Delivery
         document.querySelectorAll('.btn-delivery').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const nombre = e.currentTarget.getAttribute('data-nombre');
@@ -107,45 +109,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function abrirVisorAR(modeloUrl, nombrePlato) {
-        if (arViewer) {
-            arViewer.src = modeloUrl;
-            arViewer.alt = `Modelo 3D de ${nombrePlato}`;
-            
-            // Eliminar ios-src ya que el worker no lo retorna por ahora
-            arViewer.removeAttribute('ios-src');
-            
-            // Mostrar modal
-            if (arModal) {
-                arModal.classList.remove('hidden');
-            }
+    function abrirVisor3D(modeloUrl, nombre, precio) {
+        if (!arViewer || !modal3D) return;
 
-            // Activar AR en móvil
-            if (isMobile) {
-                try {
-                    setTimeout(() => {
-                        arViewer.activateAR();
-                    }, 300);
-                } catch (e) {
-                    console.warn("No se pudo auto-activar AR. El usuario deberá tocar el botón de AR manualmente:", e);
+        // 1. Limpiar el src anterior para evitar el efecto fantasma (flickering del plato previo)
+        arViewer.removeAttribute('src');
+        
+        // 2. Mostrar el loader visual y el modal
+        if (modelLoader) modelLoader.style.display = 'flex';
+        modal3D.classList.remove('hidden');
+
+        // 3. Llenar los datos del plato en el header del modal
+        if (modalTitle) modalTitle.textContent = nombre;
+        if (modalPrice) modalPrice.textContent = precio;
+
+        // 4. Configurar el botón secundario del modal para que envíe el WhatsApp de este plato
+        if (btnModalDelivery) {
+            btnModalDelivery.onclick = () => pedirDelivery(nombre, precio);
+        }
+
+        // 5. Establecer el nuevo modelo 3D a descargar
+        arViewer.src = modeloUrl;
+        arViewer.alt = `Modelo 3D de ${nombre}`;
+
+        // 6. Activar botón AR explícito (No fuerza apertura invasiva)
+        if (btnActivateAR) {
+            btnActivateAR.onclick = () => {
+                if (!isMobile) {
+                    alert("Para proyectar el plato en tu mesa real, necesitas abrir este menú desde tu teléfono móvil.");
+                } else {
+                    // Solo lanza la cámara de AR cuando el usuario hace clic aquí
+                    arViewer.activateAR();
                 }
-            }
+            };
         }
     }
 
+    // Escuchar el momento exacto en que termina de cargar el nuevo modelo 3D
+    if (arViewer) {
+        arViewer.addEventListener('load', () => {
+            // Ocultar spinner
+            if (modelLoader) modelLoader.style.display = 'none';
+        });
+    }
+
     function pedirDelivery(nombre, precio) {
-        const telefono = "595981XXXXXX"; // El número del local con código de país
+        const telefono = "595981XXXXXX"; // Reemplaza por tu número
         const mensaje = `¡Hola! Quiero consultar para pedir por delivery: ${nombre} (${precio}). ¿Tienen disponible?`;
         window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
-    // Cerrar Modal
+    // Cerrar el modal
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', () => {
-            if (arModal) arModal.classList.add('hidden');
+            if (modal3D) modal3D.classList.add('hidden');
         });
     }
 
-    // Iniciar
+    // Iniciar app
     cargarMenu();
 });
