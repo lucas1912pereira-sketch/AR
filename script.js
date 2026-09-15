@@ -1,36 +1,5 @@
-/**
- * Datos de Prueba para la PoC.
- * Modelos de prueba reales alojados en el repositorio de Khronos Group.
- */
-const menuItems = [
-    {
-        id: 1,
-        nombre: "Torta de Frutilla Artesanal",
-        precio: "$4.50",
-        descripcion: "Exquisita torta con una suave cubierta y detalles irresistibles.",
-        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF-Binary/Avocado.glb",
-        modeloUsdz: "", 
-        poster: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-        id: 2,
-        nombre: "Corte de Bife Grillado",
-        precio: "$14.00",
-        descripcion: "Un jugoso corte de bife a la parrilla, ideal para los amantes de la buena carne.",
-        modeloGlb: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-        modeloUsdz: "", 
-        poster: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    },
-    {
-        id: 3,
-        nombre: "Lata de Refresco Fría",
-        precio: "$2.00",
-        descripcion: "Bebida refrescante clásica para acompañar tu comida.",
-        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb",
-        modeloUsdz: "",
-        poster: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-    }
-];
+// URL exacta del Worker
+const API_URL = "https://menu-api.lucas1912pereira.workers.dev"; 
 
 document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
@@ -41,88 +10,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const desktopWarning = document.getElementById('desktop-warning');
 
     // Solo mostrar el botón si el dispositivo realmente soporta AR
-    arViewer.addEventListener('ar-status', (event) => {
-        if (event.detail.status === 'failed') {
-            console.log('AR no soportado en este equipo');
-            arButton.style.display = 'none';
-        } else {
-            arButton.style.display = 'block';
-        }
-    });
+    if (arViewer) {
+        arViewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'failed') {
+                console.log('AR no soportado en este equipo');
+                arButton.style.display = 'none';
+            } else {
+                arButton.style.display = 'block';
+            }
+        });
+    }
 
     // Detección básica de móvil para mostrar el banner en Desktop
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (!isMobile) {
+    if (!isMobile && desktopWarning) {
         desktopWarning.classList.remove('hidden');
     }
 
-    // 1. Renderizar la lista de platos
-    function renderMenu() {
-        menuContainer.innerHTML = '';
-        
-        menuItems.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'menu-card';
+    async function cargarMenu() {
+        if (!menuContainer) return;
+        menuContainer.innerHTML = "<p class='loading'>Cargando la carta...</p>";
+
+        try {
+            const respuesta = await fetch(API_URL);
+            if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
-            card.innerHTML = `
-                <img src="${item.poster}" alt="${item.nombre}" class="card-image" loading="lazy">
-                <div class="card-content">
-                    <h2 class="card-title">${item.nombre}</h2>
-                    <p class="card-description">${item.descripcion}</p>
-                    <div class="card-footer">
-                        <span class="card-price">${item.precio}</span>
-                        <button class="btn-ar" data-id="${item.id}" aria-label="Ver en Realidad Aumentada">
-                            <!-- Icono de Caja/3D SVG -->
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                            </svg>
-                            ${isMobile ? 'Ver en tu mesa' : 'No disponible en PC'}
+            const platos = await respuesta.json();
+            renderizarMenu(platos);
+        } catch (error) {
+            console.error("Error al obtener el menú:", error);
+            menuContainer.innerHTML = "<p class='error'>No se pudo cargar el menú en este momento.</p>";
+        }
+    }
+
+    function renderizarMenu(platos) {
+        if (!menuContainer) return;
+        menuContainer.innerHTML = "";
+
+        platos.forEach(plato => {
+            // Formatear precio a Guaraníes con separador de miles
+            const precioGs = new Intl.NumberFormat('es-PY', { 
+                style: 'currency', 
+                currency: 'PYG', 
+                maximumFractionDigits: 0 
+            }).format(plato.precio);
+
+            const tarjeta = document.createElement("div");
+            tarjeta.className = "plato-card"; 
+            
+            tarjeta.innerHTML = `
+                <div class="plato-img-container">
+                    <img src="${plato.imagen_url}" alt="${plato.nombre}" class="plato-img" loading="lazy">
+                    ${plato.es_ar ? '<span class="badge-ar">✨ 3D AR</span>' : ''}
+                </div>
+
+                <div class="plato-info">
+                    <span class="plato-categoria">${plato.categoria}</span>
+                    <h3>${plato.nombre}</h3>
+                    <p class="plato-desc">${plato.descripcion || ''}</p>
+                    <span class="plato-precio">${precioGs}</span>
+
+                    <div class="plato-acciones">
+                    ${plato.es_ar ? `
+                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-nombre="${plato.nombre}">
+                        Ver en tu mesa
                         </button>
+                    ` : ''}
+                    
+                    <button class="btn-delivery" data-nombre="${plato.nombre}" data-precio="${precioGs}">
+                        Pedir por WhatsApp
+                    </button>
                     </div>
                 </div>
             `;
-            
-            menuContainer.appendChild(card);
+
+            menuContainer.appendChild(tarjeta);
         });
 
-        // Event listeners a los botones AR recién creados
+        // Asignar eventos a los botones recién creados
         document.querySelectorAll('.btn-ar').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 if (!isMobile) {
                     alert("Para probar la funcionalidad AR completa, debes abrir esta página desde un dispositivo móvil.");
                 }
-                const id = parseInt(e.currentTarget.getAttribute('data-id'));
-                openARModal(id);
+                const modeloUrl = e.currentTarget.getAttribute('data-modelo');
+                const nombre = e.currentTarget.getAttribute('data-nombre');
+                abrirVisorAR(modeloUrl, nombre);
+            });
+        });
+
+        document.querySelectorAll('.btn-delivery').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const nombre = e.currentTarget.getAttribute('data-nombre');
+                const precio = e.currentTarget.getAttribute('data-precio');
+                pedirDelivery(nombre, precio);
             });
         });
     }
 
-    // 2. Lógica para abrir el visor AR dinámicamente
-    async function openARModal(id) {
-        const item = menuItems.find(i => i.id === id);
-        if (item) {
-            // Actualizar fuentes (src) dinámicamente. 
-            arViewer.src = item.modeloGlb || "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
+    function abrirVisorAR(modeloUrl, nombrePlato) {
+        if (arViewer) {
+            arViewer.src = modeloUrl;
+            arViewer.alt = `Modelo 3D de ${nombrePlato}`;
             
-            if (item.modeloUsdz) {
-                arViewer.setAttribute('ios-src', item.modeloUsdz);
-            } else {
-                arViewer.removeAttribute('ios-src');
-            }
-            
-            // Imagen póster mientras carga el 3D
-            arViewer.poster = item.poster;
-            arViewer.alt = `Modelo 3D de ${item.nombre}`;
+            // Eliminar ios-src ya que el worker no lo retorna por ahora
+            arViewer.removeAttribute('ios-src');
             
             // Mostrar modal
-            arModal.classList.remove('hidden');
+            if (arModal) {
+                arModal.classList.remove('hidden');
+            }
 
-            // Intentar ejecutar activateAR automáticamente si es móvil.
+            // Activar AR en móvil
             if (isMobile) {
                 try {
-                    // Es buena idea esperar un breve instante para asegurar que model-viewer tomó los atributos.
                     setTimeout(() => {
                         arViewer.activateAR();
                     }, 300);
@@ -133,11 +134,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. Cerrar Modal
-    closeModalBtn.addEventListener('click', () => {
-        arModal.classList.add('hidden');
-    });
+    function pedirDelivery(nombre, precio) {
+        const telefono = "595981XXXXXX"; // El número del local con código de país
+        const mensaje = `¡Hola! Quiero consultar para pedir por delivery: ${nombre} (${precio}). ¿Tienen disponible?`;
+        window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    }
 
-    // Inicializar app
-    renderMenu();
+    // Cerrar Modal
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            if (arModal) arModal.classList.add('hidden');
+        });
+    }
+
+    // Iniciar
+    cargarMenu();
 });
