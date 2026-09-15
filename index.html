@@ -57,14 +57,17 @@
                 ar
                 ar-modes="webxr scene-viewer quick-look"
                 ar-scale="fixed"
+                ar-placement="floor"
                 camera-controls
+                touch-action="pan-y"
                 auto-rotate
                 environment-image="neutral"
-                shadow-intensity="1"
-                shadow-softness="1"
-                exposure="1">
+                shadow-intensity="1.5"
+                shadow-softness="0.8"
+                exposure="1.1"
+                interaction-prompt="none">
                 
-                <button slot="ar-button" id="ar-button" class="btn-ar-slot">
+                <button slot="ar-button" id="ar-button" class="btn-ar-slot" style="display: none;">
                     🍽️ Ver en tu mesa
                 </button>
                 

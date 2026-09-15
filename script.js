@@ -36,8 +36,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
     const arModal = document.getElementById('ar-modal');
     const arViewer = document.getElementById('ar-viewer');
+    const arButton = document.getElementById('ar-button');
     const closeModalBtn = document.getElementById('close-modal');
     const desktopWarning = document.getElementById('desktop-warning');
+
+    // Solo mostrar el botón si el dispositivo realmente soporta AR
+    arViewer.addEventListener('ar-status', (event) => {
+        if (event.detail.status === 'failed') {
+            console.log('AR no soportado en este equipo');
+            arButton.style.display = 'none';
+        } else {
+            arButton.style.display = 'block';
+        }
+    });
 
     // Detección básica de móvil para mostrar el banner en Desktop
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
