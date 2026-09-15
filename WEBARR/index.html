@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Demo AR - Menú Digital</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Fuentes modernas de Google (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Model Viewer para la Realidad Aumentada -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Bistro Demo AR</h1>
+        </div>
+        <nav class="categories">
+            <button class="active">Destacados</button>
+            <button>Principales</button>
+            <button>Bebidas</button>
+            <button>Postres</button>
+        </nav>
+    </header>
+
+    <main id="menu-container">
+        <!-- Las tarjetas de los platos se generarán dinámicamente mediante script.js -->
+    </main>
+
+    <!-- Modal para el visor 3D/AR -->
+    <div id="ar-modal" class="modal hidden">
+        <div class="modal-content">
+            <button id="close-modal" class="close-btn" aria-label="Cerrar visor AR">&times;</button>
+            
+            <!-- 
+              El componente <model-viewer>
+              ar: Habilita el botón nativo de Realidad Aumentada (WebXR, SceneViewer, QuickLook)
+              camera-controls: Permite interactuar táctilmente con el modelo (rotar/zoom)
+              auto-rotate: Gira el modelo suavemente para mejor apreciación
+            -->
+            <model-viewer 
+                id="ar-viewer"
+                src="" 
+                ios-src=""
+                poster=""
+                alt="Modelo 3D del platillo seleccionado"
+                shadow-intensity="1"
+                camera-controls
+                auto-rotate
+                ar
+                ar-modes="webxr scene-viewer quick-look">
+                
+                <button slot="ar-button" id="ar-button">
+                    Ver en tu mesa (AR)
+                </button>
+                
+                <div id="ar-prompt">
+                    <img src="https://modelviewer.dev/shared-assets/icons/hand.png" alt="Mueve el teléfono para posicionar">
+                </div>
+            </model-viewer>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
