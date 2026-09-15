@@ -132,10 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         arViewer.src = modeloUrl;
         arViewer.alt = `Modelo 3D de ${nombre}`;
 
-        // Restablecer la cámara al centro exacto y ángulo inicial
         arViewer.cameraTarget = "auto auto auto";
-        arViewer.cameraOrbit = "0deg 65deg 0.45m";
-        arViewer.fieldOfView = "35deg";
+        arViewer.cameraOrbit = "0deg 75deg auto";
+        arViewer.fieldOfView = "auto";
         arViewer.jumpCameraToGoal();
 
         // 6. Activar botón AR explícito (No fuerza apertura invasiva)
