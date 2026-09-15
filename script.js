@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Imagen póster mientras carga el 3D
             arViewer.poster = item.poster;
-            arViewer.alt = \`Modelo 3D de \${item.nombre}\`;
+            arViewer.alt = `Modelo 3D de ${item.nombre}`;
             
             // Mostrar modal
             arModal.classList.remove('hidden');
