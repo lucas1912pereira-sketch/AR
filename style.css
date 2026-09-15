@@ -38,6 +38,20 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Desktop Warning Banner */
+.desktop-warning {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.desktop-warning.hidden {
+    display: none;
+}
+
 /* Header & Nav */
 header {
     background-color: var(--card-bg);
@@ -65,11 +79,11 @@ header h1 {
     gap: 0.75rem;
     overflow-x: auto;
     padding: 0 1.5rem 1rem 1.5rem;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
 }
 
 .categories::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
 }
 
 .categories button {
@@ -97,7 +111,7 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    max-width: 600px; /* Óptimo para mobile/tablet */
+    max-width: 600px;
     margin: 0 auto;
 }
 
@@ -231,8 +245,8 @@ model-viewer {
     --poster-color: transparent;
 }
 
-/* Botón AR nativo dentro de model-viewer */
-#ar-button {
+/* Botón AR nativo dentro del slot de model-viewer */
+.btn-ar-slot {
     background-color: var(--primary-color);
     color: white;
     border-radius: 24px;
@@ -244,12 +258,16 @@ model-viewer {
     padding: 14px 28px;
     font-family: var(--font-family);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.05rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
 }
 
-#ar-button:active {
+.btn-ar-slot:active {
     background-color: var(--primary-hover);
 }
 
@@ -269,4 +287,18 @@ model-viewer {
 
 model-viewer[ar-status="session-started"] > #ar-prompt {
     display: block;
+}
+
+/* Si es un dispositivo de escritorio (no táctil fino), ajustar UI */
+@media (hover: hover) and (pointer: fine) {
+    .btn-ar {
+        opacity: 0.6;
+        background-color: var(--text-secondary);
+        box-shadow: none;
+    }
+    
+    .btn-ar:hover {
+        background-color: var(--text-secondary);
+        cursor: help;
+    }
 }

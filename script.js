@@ -1,40 +1,34 @@
 /**
  * Datos de Prueba para la PoC.
- * 
- * TODO PARA PRODUCCIÓN: 
- * Reemplazar las URLs en 'modeloGlb' y 'modeloUsdz' por los enlaces reales
- * a tus modelos 3D alojados en tu bucket de Cloudflare R2 (ej. https://pub-xxx.r2.dev/modelo.glb).
+ * Modelos de prueba reales alojados en el repositorio de Khronos Group.
  */
 const menuItems = [
     {
         id: 1,
-        nombre: "Brochetas de Carne",
-        precio: "$14.50",
-        descripcion: "Exquisitas brochetas a la parrilla con verduras de temporada y especias finas.",
-        // URL pública de Khronos Group/ModelViewer para pruebas
-        modeloGlb: "https://modelviewer.dev/shared-assets/models/shishkebab.glb",
+        nombre: "Torta de Frutilla Artesanal",
+        precio: "$4.50",
+        descripcion: "Exquisita torta con una suave cubierta y detalles irresistibles.",
+        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Cake/glTF-Binary/Cake.glb",
         modeloUsdz: "", 
-        poster: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        poster: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
         id: 2,
-        nombre: "Pastel Espacial (Postre)",
-        precio: "$8.99",
-        descripcion: "Un postre de otro mundo con cobertura de chocolate negro y polvo de estrellas (Prueba de modelo).",
-        // URL pública para pruebas
-        modeloGlb: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
-        modeloUsdz: "https://modelviewer.dev/shared-assets/models/Astronaut.usdz", // Ejemplo de soporte iOS
-        poster: "https://images.unsplash.com/photo-1551024601-bec78aea704b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        nombre: "Corte de Bife Grillado",
+        precio: "$14.00",
+        descripcion: "Un jugoso corte de bife a la parrilla, ideal para los amantes de la buena carne.",
+        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/RibeyeSteak/glTF-Binary/RibeyeSteak.glb",
+        modeloUsdz: "", 
+        poster: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     },
     {
         id: 3,
-        nombre: "Cóctel Robótico",
-        precio: "$10.00",
-        descripcion: "Nuestra bebida insignia servida con precisión milimétrica (Prueba de modelo).",
-        // URL pública para pruebas
-        modeloGlb: "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
+        nombre: "Lata de Refresco Fría",
+        precio: "$2.00",
+        descripcion: "Bebida refrescante clásica para acompañar tu comida.",
+        modeloGlb: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/SodaCan/glTF-Binary/SodaCan.glb",
         modeloUsdz: "",
-        poster: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+        poster: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
     }
 ];
 
@@ -43,6 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const arModal = document.getElementById('ar-modal');
     const arViewer = document.getElementById('ar-viewer');
     const closeModalBtn = document.getElementById('close-modal');
+    const desktopWarning = document.getElementById('desktop-warning');
+
+    // Detección básica de móvil para mostrar el banner en Desktop
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) {
+        desktopWarning.classList.remove('hidden');
+    }
 
     // 1. Renderizar la lista de platos
     function renderMenu() {
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
                             </svg>
-                            Ver en tu mesa (AR)
+                            ${isMobile ? 'Ver en tu mesa' : 'No disponible en PC'}
                         </button>
                     </div>
                 </div>
@@ -78,6 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Event listeners a los botones AR recién creados
         document.querySelectorAll('.btn-ar').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                if (!isMobile) {
+                    alert("Para probar la funcionalidad AR completa, debes abrir esta página desde un dispositivo móvil.");
+                }
                 const id = parseInt(e.currentTarget.getAttribute('data-id'));
                 openARModal(id);
             });
@@ -85,11 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Lógica para abrir el visor AR dinámicamente
-    function openARModal(id) {
+    async function openARModal(id) {
         const item = menuItems.find(i => i.id === id);
         if (item) {
-            // Actualizar fuentes (src) dinámicamente para GLB y USDZ (iOS)
-            arViewer.src = item.modeloGlb;
+            // Actualizar fuentes (src) dinámicamente. 
+            arViewer.src = item.modeloGlb || "https://modelviewer.dev/shared-assets/models/Astronaut.glb";
             
             if (item.modeloUsdz) {
                 arViewer.setAttribute('ios-src', item.modeloUsdz);
@@ -99,10 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Imagen póster mientras carga el 3D
             arViewer.poster = item.poster;
-            arViewer.alt = `Modelo 3D de ${item.nombre}`;
+            arViewer.alt = \`Modelo 3D de \${item.nombre}\`;
             
             // Mostrar modal
             arModal.classList.remove('hidden');
+
+            // Intentar ejecutar activateAR automáticamente si es móvil.
+            if (isMobile) {
+                try {
+                    // Es buena idea esperar un breve instante para asegurar que model-viewer tomó los atributos.
+                    setTimeout(() => {
+                        arViewer.activateAR();
+                    }, 300);
+                } catch (e) {
+                    console.warn("No se pudo auto-activar AR. El usuario deberá tocar el botón de AR manualmente:", e);
+                }
+            }
         }
     }
 
