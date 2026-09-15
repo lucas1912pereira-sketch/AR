@@ -48,12 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
         menuContainer.innerHTML = "";
 
         platos.forEach(plato => {
-            // Formatear precio a Guaraníes con separador de miles
-            const precioGs = new Intl.NumberFormat('es-PY', { 
-                style: 'currency', 
-                currency: 'PYG', 
+            // Formatear precio a Guaraníes: Gs. XX.XXX
+            const precioFormateado = new Intl.NumberFormat('es-PY', { 
                 maximumFractionDigits: 0 
             }).format(plato.precio);
+            const precioGs = `Gs. ${precioFormateado}`;
 
             const tarjeta = document.createElement("div");
             tarjeta.className = "plato-card"; 
@@ -61,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tarjeta.innerHTML = `
                 <div class="plato-img-container">
                     <img src="${plato.imagen_url}" alt="${plato.nombre}" class="plato-img" loading="lazy">
-                    ${plato.es_ar ? '<span class="badge-ar">✨ 3D AR</span>' : ''}
+                    ${plato.es_ar === 1 ? '<span class="badge-ar">✨ 3D AR</span>' : ''}
                 </div>
 
                 <div class="plato-info">
@@ -71,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="plato-precio">${precioGs}</span>
 
                     <div class="plato-acciones">
-                    ${plato.es_ar ? `
+                    ${plato.es_ar === 1 ? `
                         <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-nombre="${plato.nombre}">
                         Ver en tu mesa
                         </button>
