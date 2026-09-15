@@ -133,7 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         arViewer.alt = `Modelo 3D de ${nombre}`;
 
         // Restablecer la cámara al centro exacto y ángulo inicial
-        arViewer.cameraOrbit = "0deg 75deg 105%";
+        arViewer.cameraTarget = "auto auto auto";
+        arViewer.cameraOrbit = "0deg 65deg 0.45m";
         arViewer.fieldOfView = "35deg";
         arViewer.jumpCameraToGoal();
 
