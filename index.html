@@ -21,6 +21,14 @@
         <p>📱 Abre este enlace desde tu celular para probar la Realidad Aumentada en tu mesa</p>
     </div>
 
+    <!-- Banner In-App Browser iOS -->
+    <div id="banner-abrir-safari" class="banner-ios-warning hidden">
+        <div class="banner-content">
+            <p>⚠️ Para activar la Realidad Aumentada en iPhone, abrí este menú en Safari.</p>
+            <button id="close-banner-ios" class="close-banner-btn">&times;</button>
+        </div>
+    </div>
+
     <header>
         <div class="header-content">
             <h1>Bistro Demo AR</h1>
@@ -65,6 +73,7 @@
                     ar
                     ar-modes="webxr scene-viewer quick-look"
                     ar-scale="fixed"
+                    ar-placement="floor"
                     camera-controls
                     disable-tap
                     auto-rotate
@@ -72,15 +81,20 @@
                     camera-target="auto auto auto"
                     camera-orbit="0deg 75deg auto"
                     environment-image="neutral"
-                    shadow-intensity="1"
-                    shadow-softness="0.8"
-                    exposure="1.1"
+                    shadow-intensity="1.5"
+                    shadow-softness="0.5"
+                    exposure="1"
+                    ios-src=""
+                    loading="lazy"
                     interaction-prompt="none">
                 </model-viewer>
             </div>
 
             <!-- Acciones (AR y WhatsApp) -->
             <div class="modal-3d-actions">
+                <div class="ar-scan-guide">
+                    💡 Apuntá hacia la mesa y mové el celular despacio para detectar la superficie.
+                </div>
                 <button id="btn-activate-ar" class="btn-ar-primary">
                     ✨ Proyectar en tu mesa (AR)
                 </button>

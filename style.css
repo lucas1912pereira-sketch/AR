@@ -59,6 +59,45 @@ body {
     display: none;
 }
 
+/* ==============================================================
+   BANNER IN-APP BROWSER iOS
+   ============================================================== */
+.banner-ios-warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffb142; /* Cálido de advertencia */
+    color: #333;
+    z-index: 2000;
+    padding-top: env(safe-area-inset-top);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.3s ease;
+}
+
+.banner-ios-warning.hidden {
+    transform: translateY(-100%);
+    pointer-events: none;
+}
+
+.banner-ios-warning .banner-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.close-banner-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    padding-left: 1rem;
+}
+
 /* Header & Nav */
 header {
     background-color: rgba(var(--card-bg), 0.8);
@@ -513,6 +552,17 @@ model-viewer {
     text-align: center;
     line-height: 1.4;
     margin-bottom: 0.5rem;
+}
+
+.ar-scan-guide {
+    background: rgba(46, 213, 115, 0.1);
+    color: var(--accent-color);
+    padding: 0.8rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid rgba(46, 213, 115, 0.3);
 }
 
 .btn-delivery-secondary {

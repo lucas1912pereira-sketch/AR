@@ -21,11 +21,38 @@ document.addEventListener('DOMContentLoaded', () => {
         desktopWarning.classList.remove('hidden');
     }
 
+    let esInAppBrowserIOS = false;
+
+    function verificarEntornoNavegacion() {
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const esIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        
+        // Cadenas comunes en In-App Browsers
+        const inAppRegex = /FBAN|FBAV|Instagram|WhatsApp|Line|Messenger/i;
+        
+        if (esIOS && inAppRegex.test(ua)) {
+            esInAppBrowserIOS = true;
+            const banner = document.getElementById('banner-abrir-safari');
+            if (banner) banner.classList.remove('hidden');
+        }
+    }
+    
+    verificarEntornoNavegacion();
+    
+    const closeBannerBtn = document.getElementById('close-banner-ios');
+    if (closeBannerBtn) {
+        closeBannerBtn.addEventListener('click', () => {
+            const banner = document.getElementById('banner-abrir-safari');
+            if (banner) banner.classList.add('hidden');
+        });
+    }
+
     // Comprobar si el AR está soportado (opcional, para ocultar botón si falla completamente)
     if (arViewer) {
         arViewer.addEventListener('ar-status', (event) => {
             if (event.detail.status === 'failed') {
                 console.warn('AR no soportado o fallido en este equipo');
+                alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
             }
         });
     }
@@ -74,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="plato-acciones">
                     ${plato.es_ar === 1 ? `
-                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-nombre="${plato.nombre}" data-precio="${precioGs}">
+                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}">
                         Inspeccionar en 3D
                         </button>
                     ` : ''}
@@ -93,9 +120,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-ar').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const modeloUrl = e.currentTarget.getAttribute('data-modelo');
+                const usdzUrl = e.currentTarget.getAttribute('data-usdz');
                 const nombre = e.currentTarget.getAttribute('data-nombre');
                 const precio = e.currentTarget.getAttribute('data-precio');
-                abrirVisor3D(modeloUrl, nombre, precio);
+                const imagenUrl = e.currentTarget.getAttribute('data-imagen');
+                abrirVisor3D(modeloUrl, usdzUrl, nombre, precio, imagenUrl);
             });
         });
 
@@ -109,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function abrirVisor3D(modeloUrl, nombre, precio) {
+    function abrirVisor3D(modeloUrl, usdzUrl, nombre, precio, imagenUrl) {
         if (!arViewer || !modal3D) return;
 
         // 1. Limpiar el src anterior para evitar el efecto fantasma (flickering del plato previo)
@@ -128,8 +157,18 @@ document.addEventListener('DOMContentLoaded', () => {
             btnModalDelivery.onclick = () => pedirDelivery(nombre, precio);
         }
 
-        // 5. Establecer el nuevo modelo 3D a descargar
+        // 5. Establecer el nuevo modelo 3D a descargar y el poster (fallback 2D)
+        if (imagenUrl) {
+            arViewer.poster = imagenUrl;
+        } else {
+            arViewer.removeAttribute('poster');
+        }
         arViewer.src = modeloUrl;
+        if (usdzUrl) {
+            arViewer.iosSrc = usdzUrl;
+        } else {
+            arViewer.removeAttribute('ios-src');
+        }
         arViewer.alt = `Modelo 3D de ${nombre}`;
 
         arViewer.cameraTarget = "auto auto auto";
@@ -142,6 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btnActivateAR.onclick = () => {
                 if (!isMobile) {
                     alert("Para proyectar el plato en tu mesa real, necesitas abrir este menú desde tu teléfono móvil.");
+                } else if (esInAppBrowserIOS) {
+                    alert("Para proyectar platos en tu mesa con iPhone, tocá los 3 puntos (o el ícono de brújula/compartir) y seleccioná 'Abrir en Safari'.");
                 } else {
                     // Solo lanza la cámara de AR cuando el usuario hace clic aquí
                     arViewer.activateAR();
