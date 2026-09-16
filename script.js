@@ -185,8 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             arViewer.setAttribute('disable-tap', '');
             arViewer.setAttribute('auto-rotate', '');
             arViewer.setAttribute('rotation-per-second', '20deg');
-            arViewer.setAttribute('camera-target', 'auto auto auto');
-            arViewer.setAttribute('camera-orbit', '0deg 75deg auto');
+            arViewer.setAttribute('bounds', 'tight');
             arViewer.setAttribute('environment-image', 'neutral');
             arViewer.setAttribute('shadow-intensity', '1.5');
             arViewer.setAttribute('shadow-softness', '0.5');
@@ -237,10 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     arViewer.removeAttribute('ios-src');
                 }
-                arViewer.cameraTarget = "auto auto auto";
-                arViewer.cameraOrbit = "0deg 75deg auto";
-                arViewer.fieldOfView = "auto";
-                arViewer.jumpCameraToGoal();
                 
                 if (typeof arViewer.dismissPoster === 'function') {
                     arViewer.dismissPoster();
