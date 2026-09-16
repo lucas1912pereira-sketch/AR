@@ -197,6 +197,11 @@ document.addEventListener('DOMContentLoaded', () => {
             arViewer.cameraOrbit = "0deg 75deg auto";
             arViewer.fieldOfView = "auto";
             arViewer.jumpCameraToGoal();
+            
+            // Fuerza al visor a actualizarse y despedir el poster en caso de que quede bloqueado
+            if (typeof arViewer.dismissPoster === 'function') {
+                arViewer.dismissPoster();
+            }
         }, 150);
 
         // 6. Activar botón AR explícito (No fuerza apertura invasiva)
