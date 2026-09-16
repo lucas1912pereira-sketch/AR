@@ -83,11 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
             let platos = await respuesta.json();
-            // Filtrar para mostrar la naranja (y temporalmente el aguacate si la naranja aún no aparece en la API)
-            platos = platos.filter(plato => 
-                plato.nombre.toLowerCase().includes('naranja') || 
-                plato.nombre.toLowerCase().includes('aguacate')
-            );
+            // Filtrar para mostrar solo la naranja
+            platos = platos.filter(plato => plato.nombre.toLowerCase().includes('naranja'));
             renderizarMenu(platos);
         } catch (error) {
             console.error("Error al obtener el menú:", error);
@@ -185,18 +182,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             arViewer.removeAttribute('poster');
         }
-        arViewer.src = modeloUrl;
-        if (usdzUrl) {
-            arViewer.iosSrc = usdzUrl;
-        } else {
-            arViewer.removeAttribute('ios-src');
-        }
-        arViewer.alt = `Modelo 3D de ${nombre}`;
+        
+        // Pequeño delay para asegurar que el navegador ha calculado el tamaño del modal antes de inyectar el src
+        setTimeout(() => {
+            arViewer.src = modeloUrl;
+            if (usdzUrl) {
+                arViewer.iosSrc = usdzUrl;
+            } else {
+                arViewer.removeAttribute('ios-src');
+            }
+            arViewer.alt = `Modelo 3D de ${nombre}`;
 
-        arViewer.cameraTarget = "auto auto auto";
-        arViewer.cameraOrbit = "0deg 75deg auto";
-        arViewer.fieldOfView = "auto";
-        arViewer.jumpCameraToGoal();
+            arViewer.cameraTarget = "auto auto auto";
+            arViewer.cameraOrbit = "0deg 75deg auto";
+            arViewer.fieldOfView = "auto";
+            arViewer.jumpCameraToGoal();
+        }, 150);
 
         // 6. Activar botón AR explícito (No fuerza apertura invasiva)
         if (btnActivateAR) {
