@@ -26,14 +26,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function verificarEntornoNavegacion() {
         const ua = navigator.userAgent || navigator.vendor || window.opera;
         const esIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+        const esAndroid = /Android/i.test(ua);
         
         // Cadenas comunes en In-App Browsers
         const inAppRegex = /FBAN|FBAV|Instagram|WhatsApp|Line|Messenger/i;
         
-        if (esIOS && inAppRegex.test(ua)) {
-            esInAppBrowserIOS = true;
+        if (inAppRegex.test(ua)) {
             const banner = document.getElementById('banner-abrir-safari');
-            if (banner) banner.classList.remove('hidden');
+            
+            if (esAndroid) {
+                // En Android, intentamos forzar la apertura en el navegador predeterminado mediante intent
+                const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+                window.location.href = `intent://${currentUrl}#Intent;scheme=https;end;`;
+                
+                // Si la redirección falla o no es soportada, mostramos un aviso
+                if (banner) {
+                    banner.querySelector('p').innerHTML = "⚠️ Tu navegador actual bloquea la Realidad Aumentada. Tocá los 3 puntos arriba a la derecha y seleccioná 'Abrir en el navegador'.";
+                    banner.classList.remove('hidden');
+                }
+            } else if (esIOS) {
+                esInAppBrowserIOS = true;
+                if (banner) {
+                    banner.querySelector('p').innerHTML = "⚠️ Tu navegador actual bloquea la Realidad Aumentada. Tocá el ícono inferior (brújula) y seleccioná 'Abrir en Safari'.";
+                    banner.classList.remove('hidden');
+                }
+            }
         }
     }
     
@@ -65,7 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const respuesta = await fetch(API_URL);
             if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
-            const platos = await respuesta.json();
+            let platos = await respuesta.json();
+            // Filtrar para mostrar solo la naranja
+            platos = platos.filter(plato => plato.nombre.toLowerCase().includes('naranja'));
             renderizarMenu(platos);
         } catch (error) {
             console.error("Error al obtener el menú:", error);
@@ -179,10 +198,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 6. Activar botón AR explícito (No fuerza apertura invasiva)
         if (btnActivateAR) {
             btnActivateAR.onclick = () => {
+                const banner = document.getElementById('banner-abrir-safari');
+                const enInAppBrowser = banner && !banner.classList.contains('hidden');
+                
                 if (!isMobile) {
                     alert("Para proyectar el plato en tu mesa real, necesitas abrir este menú desde tu teléfono móvil.");
-                } else if (esInAppBrowserIOS) {
-                    alert("Para proyectar platos en tu mesa con iPhone, tocá los 3 puntos (o el ícono de brújula/compartir) y seleccioná 'Abrir en Safari'.");
+                } else if (enInAppBrowser) {
+                    alert("El visor AR está bloqueado en este navegador. Por favor, seguí las instrucciones del banner superior para abrir el menú en tu navegador principal.");
                 } else {
                     // Solo lanza la cámara de AR cuando el usuario hace clic aquí
                     arViewer.activateAR();
