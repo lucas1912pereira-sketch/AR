@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             arViewer.id = 'ar-viewer';
             arViewer.setAttribute('ar', '');
             arViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-            arViewer.setAttribute('ar-scale', 'fixed');
+            arViewer.setAttribute('ar-scale', 'auto');
             arViewer.setAttribute('ar-placement', 'floor');
             arViewer.setAttribute('camera-controls', '');
             arViewer.setAttribute('disable-tap', '');
