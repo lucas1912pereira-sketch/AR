@@ -228,6 +228,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ocultar spinner
             if (modelLoader) modelLoader.style.display = 'none';
         });
+
+        // Escuchar si hay errores al cargar (ej. URL rota, CORS, o 404)
+        arViewer.addEventListener('error', (event) => {
+            console.error('Error cargando el modelo 3D:', event);
+            if (modelLoader) {
+                const loaderText = modelLoader.querySelector('p');
+                if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
+                const spinner = modelLoader.querySelector('.spinner');
+                if (spinner) spinner.style.display = 'none';
+            }
+        });
     }
 
     function pedirDelivery(nombre, precio) {
