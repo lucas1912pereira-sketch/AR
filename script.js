@@ -83,8 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
             let platos = await respuesta.json();
-            // Filtrar para mostrar solo la naranja
-            platos = platos.filter(plato => plato.nombre.toLowerCase().includes('naranja'));
+            // Filtrar para mostrar la naranja (y temporalmente el aguacate si la naranja aún no aparece en la API)
+            platos = platos.filter(plato => 
+                plato.nombre.toLowerCase().includes('naranja') || 
+                plato.nombre.toLowerCase().includes('aguacate')
+            );
             renderizarMenu(platos);
         } catch (error) {
             console.error("Error al obtener el menú:", error);
