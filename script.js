@@ -160,10 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function abrirVisor3D(modeloUrl, usdzUrl, nombre, precio, imagenUrl) {
         if (!arViewer || !modal3D) return;
 
-        // 1. Limpiar el src anterior para evitar el efecto fantasma (flickering del plato previo)
-        arViewer.removeAttribute('src');
-        
-        // 2. Mostrar el loader visual y el modal
+        // Mostrar el loader visual y el modal
         if (modelLoader) modelLoader.style.display = 'flex';
         modal3D.classList.remove('hidden');
 
