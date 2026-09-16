@@ -4,7 +4,7 @@ const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
 document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
     const modal3D = document.getElementById('modal-visor-3d');
-    const arViewer = document.getElementById('ar-viewer');
+    let arViewer = null;
     const modelLoader = document.getElementById('model-loader');
     
     const closeModalBtn = document.getElementById('close-modal-3d');
@@ -64,15 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Comprobar si el AR está soportado (opcional, para ocultar botón si falla completamente)
-    if (arViewer) {
-        arViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'failed') {
-                console.warn('AR no soportado o fallido en este equipo');
-                alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
-            }
-        });
-    }
+    // (Los listeners de AR se asignarán dinámicamente al abrir el visor)
 
     async function cargarMenu() {
         if (!menuContainer) return;
@@ -158,10 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function abrirVisor3D(modeloUrl, usdzUrl, nombre, precio, imagenUrl) {
-        if (!arViewer || !modal3D) return;
+        if (!modal3D) return;
 
         // Mostrar el loader visual y el modal
-        if (modelLoader) modelLoader.style.display = 'flex';
+        if (modelLoader) {
+            modelLoader.style.display = 'flex';
+            const loaderText = modelLoader.querySelector('p');
+            if (loaderText) loaderText.textContent = "Cargando modelo 3D...";
+            const spinner = modelLoader.querySelector('.spinner');
+            if (spinner) spinner.style.display = 'block';
+        }
         modal3D.classList.remove('hidden');
 
         // 3. Llenar los datos del plato en el header del modal
@@ -173,31 +171,80 @@ document.addEventListener('DOMContentLoaded', () => {
             btnModalDelivery.onclick = () => pedirDelivery(nombre, precio);
         }
 
-        // 5. Establecer el nuevo modelo 3D a descargar y el poster (fallback 2D)
+        // 5. Crear el visor 3D si no existe (Reutilizar instancia para no agotar contextos WebGL)
+        const container = document.querySelector('.model-viewer-container');
+        
+        if (!arViewer) {
+            arViewer = document.createElement('model-viewer');
+            arViewer.id = 'ar-viewer';
+            arViewer.setAttribute('ar', '');
+            arViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+            arViewer.setAttribute('ar-scale', 'fixed');
+            arViewer.setAttribute('ar-placement', 'floor');
+            arViewer.setAttribute('camera-controls', '');
+            arViewer.setAttribute('disable-tap', '');
+            arViewer.setAttribute('auto-rotate', '');
+            arViewer.setAttribute('rotation-per-second', '20deg');
+            arViewer.setAttribute('camera-target', 'auto auto auto');
+            arViewer.setAttribute('camera-orbit', '0deg 75deg auto');
+            arViewer.setAttribute('environment-image', 'neutral');
+            arViewer.setAttribute('shadow-intensity', '1.5');
+            arViewer.setAttribute('shadow-softness', '0.5');
+            arViewer.setAttribute('exposure', '1');
+            arViewer.setAttribute('loading', 'lazy');
+            arViewer.setAttribute('interaction-prompt', 'none');
+
+            // Listeners de eventos (Solo se agregan 1 vez)
+            arViewer.addEventListener('ar-status', (event) => {
+                if (event.detail.status === 'failed') {
+                    console.warn('AR no soportado o fallido en este equipo');
+                    alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
+                }
+            });
+
+            arViewer.addEventListener('load', () => {
+                if (modelLoader) modelLoader.style.display = 'none';
+            });
+
+            arViewer.addEventListener('error', (event) => {
+                console.error('Error cargando el modelo 3D:', event);
+                if (modelLoader) {
+                    const loaderText = modelLoader.querySelector('p');
+                    if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
+                    const spinner = modelLoader.querySelector('.spinner');
+                    if (spinner) spinner.style.display = 'none';
+                }
+            });
+
+            container.appendChild(arViewer);
+        }
+
+        // Actualizar datos dinámicos para el plato actual
+        arViewer.setAttribute('alt', `Modelo 3D de ${nombre}`);
+        
         if (imagenUrl) {
-            arViewer.poster = imagenUrl;
+            arViewer.setAttribute('poster', imagenUrl);
         } else {
             arViewer.removeAttribute('poster');
         }
         
-        // Pequeño delay para asegurar que el navegador ha calculado el tamaño del modal antes de inyectar el src
+        // Pequeño delay para que el modal termine de hacerse visible antes de cargar los pesos pesados
         setTimeout(() => {
-            arViewer.src = modeloUrl;
-            if (usdzUrl) {
-                arViewer.iosSrc = usdzUrl;
-            } else {
-                arViewer.removeAttribute('ios-src');
-            }
-            arViewer.alt = `Modelo 3D de ${nombre}`;
-
-            arViewer.cameraTarget = "auto auto auto";
-            arViewer.cameraOrbit = "0deg 75deg auto";
-            arViewer.fieldOfView = "auto";
-            arViewer.jumpCameraToGoal();
-            
-            // Fuerza al visor a actualizarse y despedir el poster en caso de que quede bloqueado
-            if (typeof arViewer.dismissPoster === 'function') {
-                arViewer.dismissPoster();
+            if (arViewer) {
+                arViewer.setAttribute('src', modeloUrl);
+                if (usdzUrl) {
+                    arViewer.setAttribute('ios-src', usdzUrl);
+                } else {
+                    arViewer.removeAttribute('ios-src');
+                }
+                arViewer.cameraTarget = "auto auto auto";
+                arViewer.cameraOrbit = "0deg 75deg auto";
+                arViewer.fieldOfView = "auto";
+                arViewer.jumpCameraToGoal();
+                
+                if (typeof arViewer.dismissPoster === 'function') {
+                    arViewer.dismissPoster();
+                }
             }
         }, 150);
 
@@ -219,24 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Escuchar el momento exacto en que termina de cargar el nuevo modelo 3D
-    if (arViewer) {
-        arViewer.addEventListener('load', () => {
-            // Ocultar spinner
-            if (modelLoader) modelLoader.style.display = 'none';
-        });
-
-        // Escuchar si hay errores al cargar (ej. URL rota, CORS, o 404)
-        arViewer.addEventListener('error', (event) => {
-            console.error('Error cargando el modelo 3D:', event);
-            if (modelLoader) {
-                const loaderText = modelLoader.querySelector('p');
-                if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
-                const spinner = modelLoader.querySelector('.spinner');
-                if (spinner) spinner.style.display = 'none';
-            }
-        });
-    }
+    // Los listeners de arViewer ahora se gestionan dentro de abrirVisor3D
 
     function pedirDelivery(nombre, precio) {
         const telefono = "595981XXXXXX"; // Reemplaza por tu número

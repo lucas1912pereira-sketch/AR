@@ -68,27 +68,7 @@
                     <p>Cargando modelo 3D...</p>
                 </div>
 
-                <!-- Configuración optimizada de model-viewer -->
-                <model-viewer 
-                    id="ar-viewer"
-                    alt="Modelo 3D del platillo seleccionado"
-                    ar
-                    ar-modes="webxr scene-viewer quick-look"
-                    ar-scale="fixed"
-                    ar-placement="floor"
-                    camera-controls
-                    disable-tap
-                    auto-rotate
-                    rotation-per-second="20deg"
-                    camera-target="auto auto auto"
-                    camera-orbit="0deg 75deg auto"
-                    environment-image="neutral"
-                    shadow-intensity="1.5"
-                    shadow-softness="0.5"
-                    exposure="1"
-                    loading="lazy"
-                    interaction-prompt="none">
-                </model-viewer>
+                <!-- model-viewer se inyectará dinámicamente vía JS -->
             </div>
 
             <!-- Acciones (AR y WhatsApp) -->
