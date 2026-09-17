@@ -230,7 +230,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pequeño delay para que el modal termine de hacerse visible antes de cargar los pesos pesados
         setTimeout(() => {
             if (arViewer) {
-                arViewer.setAttribute('src', modeloUrl);
+                // Si el modelo ya es el mismo y está cargado, ocultar el loader enseguida
+                if (arViewer.getAttribute('src') === modeloUrl) {
+                    if (modelLoader) modelLoader.style.display = 'none';
+                } else {
+                    arViewer.setAttribute('src', modeloUrl);
+                }
+                
                 if (usdzUrl) {
                     arViewer.setAttribute('ios-src', usdzUrl);
                 } else {
