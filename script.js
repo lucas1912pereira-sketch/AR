@@ -145,11 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
 <img alt="${plato.nombre}" class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-105" src="${plato.imagen_url}"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#141416] via-[#141416]/25 to-transparent"></div>
 <!-- 3D AR Floating Badge -->
-${plato.es_ar === 1 ? \`
+${plato.es_ar === 1 ? `
 <div class="absolute top-4 right-4 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-gold/50 backdrop-blur-md shadow-xl text-amber-gold font-label-sm text-[12px] font-bold tracking-wide animate-pulse">
 <span>✨</span>
 <span>3D AR</span>
-</div>\` : ''}
+</div>` : ''}
 <!-- Quick Experience Pill Bottom-Left on Image -->
 <div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-zinc-200 font-label-sm text-[12px] bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
 <span class="material-symbols-outlined text-[16px] text-amber-gold">view_in_ar</span>
@@ -189,13 +189,13 @@ ${plato.es_ar === 1 ? \`
 <!-- Action CTAs Stack -->
 <div class="flex flex-col gap-3.5 w-full">
 <!-- Primary 3D/AR Inspection Button -->
-${plato.es_ar === 1 ? \`
+${plato.es_ar === 1 ? `
 <button class="btn-ar group/btn relative w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-amber hover:brightness-110 active:scale-[0.98] transition-all duration-300 overflow-hidden cursor-pointer" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}" type="button">
 <div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-in-out"></div>
 <span class="material-symbols-outlined text-[22px] transition-transform duration-300 group-hover/btn:rotate-12">view_in_ar</span>
 <span class="tracking-wide">Inspeccionar en 3D</span>
 </button>
-\` : ''}
+` : ''}
 <!-- WhatsApp Direct Order Button -->
 <button class="btn-delivery w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-emerald hover:brightness-110 active:scale-[0.98] transition-all duration-300 cursor-pointer" data-nombre="${plato.nombre}" data-precio="${precioGs}">
 <span class="text-[19px]">💬</span>
