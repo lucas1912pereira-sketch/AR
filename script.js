@@ -139,19 +139,19 @@ document.addEventListener('DOMContentLoaded', () => {
             tarjeta.className = "w-full"; 
             
             tarjeta.innerHTML = `
-<article class="group relative rounded-2xl bg-[#141416]/80 backdrop-blur-md border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-500 hover:border-amber-gold/40 hover:shadow-[0_25px_60px_rgba(245,158,11,0.2)]">
+<article class="group relative rounded-2xl bg-[#141416]/95 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-500 hover:border-amber-gold/40 hover:shadow-[0_25px_60px_rgba(245,158,11,0.2)]">
 <!-- Card Image Header -->
 <div class="relative w-full aspect-[16/11] overflow-hidden bg-black/60">
 <img alt="${plato.nombre}" class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-105" src="${plato.imagen_url}"/>
 <div class="absolute inset-0 bg-gradient-to-t from-[#141416] via-[#141416]/25 to-transparent"></div>
 <!-- 3D AR Floating Badge -->
 ${plato.es_ar === 1 ? `
-<div class="absolute top-4 right-4 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-gold/50 backdrop-blur-md shadow-xl text-amber-gold font-label-sm text-[12px] font-bold tracking-wide animate-pulse">
+<div class="absolute top-4 right-4 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/90 border border-amber-gold/50 shadow-xl text-amber-gold font-label-sm text-[12px] font-bold tracking-wide">
 <span>✨</span>
 <span>3D AR</span>
 </div>` : ''}
 <!-- Quick Experience Pill Bottom-Left on Image -->
-<div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-zinc-200 font-label-sm text-[12px] bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
+<div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-zinc-200 font-label-sm text-[12px] bg-black/85 px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
 <span class="material-symbols-outlined text-[16px] text-amber-gold">view_in_ar</span>
 <span>Proyección interactiva 1:1</span>
 </div>
@@ -167,7 +167,7 @@ ${plato.es_ar === 1 ? `
                 </span>
 </div>
 <span class="inline-flex items-center gap-1.5 text-emerald-400 font-label-sm text-[11px] bg-emerald-950/70 border border-emerald-500/40 px-2.5 py-0.5 rounded-full font-semibold shadow-sm">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> DISPONIBLE
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> DISPONIBLE
               </span>
 </div>
 <!-- Title & Ingredients -->
@@ -178,7 +178,7 @@ ${plato.es_ar === 1 ? `
               ${plato.descripcion || ''}
             </p>
 <!-- Pricing Banner -->
-<div class="flex items-baseline justify-between mb-6 bg-black/50 border border-white/10 px-5 py-3.5 rounded-xl backdrop-blur-sm">
+<div class="flex items-baseline justify-between mb-6 bg-black/80 border border-white/10 px-5 py-3.5 rounded-xl">
 <span class="font-label-sm text-zinc-400 uppercase font-bold tracking-wider text-[11px]">Precio de Carta</span>
 <div class="flex items-baseline gap-1">
 <span class="font-headline-md text-amber-gold font-black text-[24px] tracking-tight">
@@ -190,14 +190,14 @@ ${plato.es_ar === 1 ? `
 <div class="flex flex-col gap-3.5 w-full">
 <!-- Primary 3D/AR Inspection Button -->
 ${plato.es_ar === 1 ? `
-<button class="btn-ar group/btn relative w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-amber hover:brightness-110 active:scale-[0.98] transition-all duration-300 overflow-hidden cursor-pointer" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}" type="button">
+<button class="btn-ar group/btn relative w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 hover:brightness-110 active:scale-[0.98] transition-all duration-300 overflow-hidden cursor-pointer" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}" type="button">
 <div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-in-out"></div>
 <span class="material-symbols-outlined text-[22px] transition-transform duration-300 group-hover/btn:rotate-12">view_in_ar</span>
 <span class="tracking-wide">Inspeccionar en 3D</span>
 </button>
 ` : ''}
 <!-- WhatsApp Direct Order Button -->
-<button class="btn-delivery w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-emerald hover:brightness-110 active:scale-[0.98] transition-all duration-300 cursor-pointer" data-nombre="${plato.nombre}" data-precio="${precioGs}">
+<button class="btn-delivery w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 hover:brightness-110 active:scale-[0.98] transition-all duration-300 cursor-pointer" data-nombre="${plato.nombre}" data-precio="${precioGs}">
 <span class="text-[19px]">💬</span>
 <span class="tracking-wide">Pedir este plato por WhatsApp</span>
 </button>
@@ -273,7 +273,7 @@ ${plato.es_ar === 1 ? `
             arViewer = document.createElement('model-viewer');
             arViewer.id = 'ar-viewer';
             arViewer.setAttribute('ar', '');
-            arViewer.setAttribute('ar-modes', 'scene-viewer webxr quick-look');
+            arViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
             arViewer.setAttribute('ar-scale', 'auto');
             arViewer.setAttribute('ar-placement', 'floor');
             arViewer.setAttribute('camera-controls', '');
@@ -292,6 +292,13 @@ ${plato.es_ar === 1 ? `
                 if (event.detail.status === 'failed') {
                     console.warn('AR no soportado o fallido en este equipo');
                     alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
+                }
+                if (event.detail.status === 'session-started') {
+                    // Ocultar del DOM (ahorra cálculos de composición visual del navegador)
+                    arViewer.style.visibility = 'hidden';
+                }
+                if (event.detail.status === 'not-presenting') {
+                    arViewer.style.visibility = 'visible';
                 }
             });
 
