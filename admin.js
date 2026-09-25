@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('add-dish-form');
     const statusDiv = document.getElementById('upload-status');
     const btnSave = document.getElementById('btn-save-dish');
+    const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -78,10 +79,41 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSave.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Subiendo...';
         btnSave.disabled = true;
 
-        // Aquí iría la conexión real con Cloudflare R2 y D1
-        // Por ahora simulamos una carga de 2 segundos
+        const name = document.getElementById('dish-name').value;
+        const price = document.getElementById('dish-price').value;
+        const desc = document.getElementById('dish-desc').value;
+        const category = document.getElementById('dish-category').value;
+        const order = document.getElementById('dish-order').value;
+        const priceOffer = document.getElementById('dish-price-offer').value;
+        const featured = document.getElementById('dish-featured').checked ? 1 : 0;
         
-        setTimeout(() => {
+        const fileImg = document.getElementById('file-img').files[0];
+        const fileGlb = document.getElementById('file-glb').files[0];
+        const fileUsdz = document.getElementById('file-usdz').files[0];
+
+        const formData = new FormData();
+        formData.append('nombre', name);
+        formData.append('precio', price);
+        formData.append('descripcion', desc);
+        formData.append('categoria', category);
+        formData.append('orden', order || 100);
+        formData.append('destacado', featured);
+        if (priceOffer) formData.append('precio_oferta', priceOffer);
+        
+        formData.append('es_ar', (fileGlb || fileUsdz) ? 1 : 0);
+        
+        if (fileImg) formData.append('imagen', fileImg);
+        if (fileGlb) formData.append('modelo_glb', fileGlb);
+        if (fileUsdz) formData.append('modelo_usdz', fileUsdz);
+
+        try {
+            const respuesta = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!respuesta.ok) throw new Error("Error en el servidor al guardar el plato");
+
             statusDiv.textContent = "¡Plato guardado con éxito! El menú ha sido actualizado.";
             statusDiv.className = "upload-status success";
             
@@ -102,8 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(id === 'drop-usdz') box.querySelector('span').textContent = 'Modelo 3D (iOS)';
             });
 
+        } catch (error) {
+            console.error("Error al guardar:", error);
+            statusDiv.textContent = "Error al guardar el plato. Revisá la consola para más detalles.";
+            statusDiv.className = "upload-status error";
+        } finally {
             btnSave.innerHTML = btnOriginalText;
             btnSave.disabled = false;
-        }, 2000);
+        }
     });
 });
