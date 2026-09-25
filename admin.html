@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Demo AR - Admin Panel</title>
+    <link rel="stylesheet" href="./admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Iconos Phosphor -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Modal de Login -->
+    <div id="login-modal" class="auth-overlay">
+        <div class="auth-card">
+            <div class="auth-header">
+                <i class="ph ph-lock-key auth-icon"></i>
+                <h2>Acceso Restringido</h2>
+                <p>Ingresá la contraseña para administrar el menú.</p>
+            </div>
+            <div class="input-group">
+                <input type="password" id="admin-password" placeholder="Contraseña">
+            </div>
+            <button id="btn-login" class="btn-primary">Ingresar</button>
+            <p id="login-error" class="error-msg hidden">Contraseña incorrecta</p>
+        </div>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="admin-dashboard" class="dashboard hidden">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>Panel de Administración</h1>
+                <span class="badge">Bistro AR</span>
+            </div>
+            <a href="./index.html" class="btn-outline">
+                <i class="ph ph-arrow-left"></i> Volver al Menú
+            </a>
+        </header>
+
+        <main class="dashboard-content">
+            <div class="form-card">
+                <h2>Añadir Nuevo Plato</h2>
+                <p class="subtitle">Cargá los detalles y los modelos 3D para tu menú.</p>
+
+                <form id="add-dish-form" class="dish-form">
+                    
+                    <!-- Información Básica -->
+                    <div class="form-section">
+                        <h3>1. Información Básica</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="dish-name">Nombre del Plato</label>
+                                <input type="text" id="dish-name" placeholder="Ej: Hamburguesa Doble" required>
+                            </div>
+                            <div class="input-group">
+                                <label for="dish-price">Precio (Gs.)</label>
+                                <input type="number" id="dish-price" placeholder="Ej: 45000" required>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="dish-category">Categoría</label>
+                            <select id="dish-category" required>
+                                <option value="Destacados">Destacados</option>
+                                <option value="Principales">Principales</option>
+                                <option value="Entradas">Entradas</option>
+                                <option value="Bebidas">Bebidas</option>
+                                <option value="Postres">Postres</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="dish-desc">Descripción (opcional)</label>
+                            <textarea id="dish-desc" rows="3" placeholder="Ingredientes o descripción breve..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Archivos 3D y Foto -->
+                    <div class="form-section">
+                        <h3>2. Archivos Multimedia</h3>
+                        
+                        <div class="upload-grid">
+                            <!-- Foto del Plato -->
+                            <div class="upload-box" id="drop-img">
+                                <i class="ph ph-image"></i>
+                                <span>Foto del Plato</span>
+                                <small>JPG, PNG, WEBP</small>
+                                <input type="file" id="file-img" accept="image/*" hidden>
+                            </div>
+
+                            <!-- Modelo GLB -->
+                            <div class="upload-box" id="drop-glb">
+                                <i class="ph ph-cube"></i>
+                                <span>Modelo 3D (Android)</span>
+                                <small>Archivo .glb</small>
+                                <input type="file" id="file-glb" accept=".glb" hidden>
+                            </div>
+
+                            <!-- Modelo USDZ -->
+                            <div class="upload-box" id="drop-usdz">
+                                <i class="ph ph-apple-logo"></i>
+                                <span>Modelo 3D (iOS)</span>
+                                <small>Archivo .usdz</small>
+                                <input type="file" id="file-usdz" accept=".usdz" hidden>
+                            </div>
+                        </div>
+                        <div id="upload-status" class="upload-status hidden"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="btn-save-dish">
+                            <i class="ph ph-check-circle"></i> Guardar y Publicar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="./admin.js"></script>
+</body>
+</html>
