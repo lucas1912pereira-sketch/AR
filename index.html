@@ -11,7 +11,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Syne:wght@600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 <style>
     @layer base {
       html, body { margin:0; padding:0; }
@@ -364,18 +363,11 @@ void main() {
                 </p>
 </div>
 <!-- Active 360 Spin Simulation View -->
-<div class="relative z-10 w-full h-full flex items-center justify-center select-none cursor-grab active:cursor-grabbing p-4" id="viewport-3d">
+<div class="relative z-10 w-full h-full flex items-center justify-center select-none p-4" id="viewport-3d">
 <div class="relative w-64 h-56 transition-transform duration-100 ease-out flex items-center justify-center" id="burger-3d-model">
 <img alt="Proyección 3D Hamburguesa" class="w-56 h-48 object-cover rounded-full shadow-[0_20px_45px_rgba(0,0,0,0.8)] ring-2 ring-amber-gold/40 filter contrast-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UI-060NZdHXYTOl8FTzPtscmiKHDGuDvw86BAlNgyVylMLo3svXf8KP9VqrELFJiaD3Ry1k20sE0ic1Pt4QZF8ljPDn6Pu5Wm8gOFH91F_NQP7CRwg0D6Asf_5zosqWZouH2IskzyivjZkF5rHQkjcE5-KdhCpzs0-yJ6iuHDqqqPdsSm5bVxjx3Me2LA6GZsDa80oLwhHFPuQKzIls9zrIAYeNdUe_ZPmLvuerR4vfFpwtXvGbrlc-w"/>
 <!-- Floor Virtual Shadow / AR Plane Anchor -->
 <div class="absolute -bottom-4 w-48 h-6 bg-black/90 rounded-full blur-md"></div>
-<!-- Reticle Coordinates Overlay -->
-<div class="absolute -inset-4 border border-dashed border-amber-gold/30 rounded-full pointer-events-none"></div>
-</div>
-<!-- Floating 360 Rotation Control Guides -->
-<div class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-black/90 text-zinc-200 font-label-sm text-[11px] flex items-center gap-1.5 border border-white/10">
-<span class="material-symbols-outlined text-[14px] text-amber-gold">360</span>
-<span>Arrastra para girar 360°</span>
 </div>
 <div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/90 text-amber-gold font-label-sm text-[11px] font-bold border border-amber-gold/40">
                   Escala Real 1:1
