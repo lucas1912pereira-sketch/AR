@@ -252,6 +252,10 @@ ${plato.es_ar === 1 ? `
             panel.classList.add('scale-100');
         }
 
+        // APAGAR EL SHADER DE FONDO PARA NO EXPLOTAR LA GPU
+        const shaderBg = document.getElementById('shader-canvas-ANIMATION_12');
+        if (shaderBg) shaderBg.style.display = 'none';
+
         // 3. Llenar los datos del plato en el header del modal
         if (modalTitle) modalTitle.textContent = nombre;
         if (modalPrice) modalPrice.textContent = precio;
@@ -261,61 +265,57 @@ ${plato.es_ar === 1 ? `
             btnModalDelivery.onclick = () => pedirDelivery(nombre, precio);
         }
 
-        // 5. Crear el visor 3D si no existe (Reutilizar instancia para no agotar contextos WebGL)
         const container = document.getElementById('viewport-3d');
         
-        // Siempre destruir la instancia anterior para liberar la memoria WebGL y evitar crasheos (explota el celular)
-        if (arViewer) {
-            arViewer.remove();
-            arViewer = null;
+        // REVERSIÓN: Usar un solo visor y reusarlo es MEJOR para evitar el límite de contextos WebGL (que causa la pantalla negra)
+        if (!arViewer) {
+            arViewer = document.createElement('model-viewer');
+            arViewer.id = 'ar-viewer';
+            arViewer.setAttribute('ar', '');
+            arViewer.setAttribute('ar-modes', 'scene-viewer webxr quick-look');
+            arViewer.setAttribute('ar-scale', 'auto');
+            arViewer.setAttribute('ar-placement', 'floor');
+            arViewer.setAttribute('camera-controls', '');
+            arViewer.setAttribute('auto-rotate', '');
+            arViewer.setAttribute('rotation-per-second', '20deg');
+            arViewer.setAttribute('bounds', 'tight');
+            arViewer.setAttribute('environment-image', 'neutral');
+            arViewer.setAttribute('shadow-intensity', '1.5');
+            arViewer.setAttribute('shadow-softness', '0.5');
+            arViewer.setAttribute('exposure', '1');
+            arViewer.setAttribute('loading', 'lazy');
+            arViewer.setAttribute('interaction-prompt', 'none');
+
+            // Listeners de eventos (Solo se agregan 1 vez)
+            arViewer.addEventListener('ar-status', (event) => {
+                if (event.detail.status === 'failed') {
+                    console.warn('AR no soportado o fallido en este equipo');
+                    alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
+                }
+            });
+
+            arViewer.addEventListener('load', () => {
+                if (modelLoader) {
+                    modelLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        modelLoader.style.display = 'none';
+                    }, 400);
+                }
+            });
+
+            arViewer.addEventListener('error', (event) => {
+                console.error('Error cargando el modelo 3D:', event);
+                if (modelLoader) {
+                    const loaderText = modelLoader.querySelector('p');
+                    if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
+                    const spinner = modelLoader.querySelector('div');
+                    if (spinner) spinner.style.display = 'none';
+                }
+            });
+
+            container.innerHTML = ''; // Clear placeholder
+            container.appendChild(arViewer);
         }
-
-        arViewer = document.createElement('model-viewer');
-        arViewer.id = 'ar-viewer';
-        arViewer.setAttribute('ar', '');
-        arViewer.setAttribute('ar-modes', 'scene-viewer webxr quick-look');
-        arViewer.setAttribute('ar-scale', 'auto');
-        arViewer.setAttribute('ar-placement', 'floor');
-        arViewer.setAttribute('camera-controls', '');
-        arViewer.setAttribute('auto-rotate', '');
-        arViewer.setAttribute('rotation-per-second', '20deg');
-        arViewer.setAttribute('bounds', 'tight');
-        arViewer.setAttribute('environment-image', 'neutral');
-        arViewer.setAttribute('shadow-intensity', '1.5');
-        arViewer.setAttribute('shadow-softness', '0.5');
-        arViewer.setAttribute('exposure', '1');
-        arViewer.setAttribute('loading', 'lazy');
-        arViewer.setAttribute('interaction-prompt', 'none');
-
-        // Listeners de eventos
-        arViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'failed') {
-                console.warn('AR no soportado o fallido en este equipo');
-                alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
-            }
-        });
-
-        arViewer.addEventListener('load', () => {
-            if (modelLoader) {
-                modelLoader.style.opacity = '0';
-                setTimeout(() => {
-                    modelLoader.style.display = 'none';
-                }, 400);
-            }
-        });
-
-        arViewer.addEventListener('error', (event) => {
-            console.error('Error cargando el modelo 3D:', event);
-            if (modelLoader) {
-                const loaderText = modelLoader.querySelector('p');
-                if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
-                const spinner = modelLoader.querySelector('div');
-                if (spinner) spinner.style.display = 'none';
-            }
-        });
-
-        container.innerHTML = ''; // Clear placeholder
-        container.appendChild(arViewer);
 
         // Actualizar datos dinámicos para el plato actual
         arViewer.setAttribute('alt', `Modelo 3D de ${nombre}`);
@@ -329,10 +329,17 @@ ${plato.es_ar === 1 ? `
         // Pequeño delay para que el modal termine de hacerse visible antes de cargar los pesos pesados
         setTimeout(() => {
             if (arViewer) {
-                arViewer.setAttribute('src', modeloUrl);
+                // Si el modelo ya es el mismo y está cargado, ocultar el loader enseguida
+                if (arViewer.getAttribute('src') === modeloUrl) {
+                    if (modelLoader) modelLoader.style.display = 'none';
+                } else {
+                    arViewer.setAttribute('src', modeloUrl);
+                }
                 
                 if (usdzUrl) {
                     arViewer.setAttribute('ios-src', usdzUrl);
+                } else {
+                    arViewer.removeAttribute('ios-src');
                 }
                 
                 if (typeof arViewer.dismissPoster === 'function') {
@@ -377,6 +384,10 @@ ${plato.es_ar === 1 ? `
             }
             modal3D.classList.remove('opacity-100');
             modal3D.classList.add('opacity-0');
+
+            // PRENDER EL SHADER DE FONDO NUEVAMENTE
+            const shaderBg = document.getElementById('shader-canvas-ANIMATION_12');
+            if (shaderBg) shaderBg.style.display = 'block';
             setTimeout(() => {
                 modal3D.classList.add('pointer-events-none');
                 if (arViewer) {
