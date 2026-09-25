@@ -81,6 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch(API_URL);
             const dishes = await res.json();
+            
+            // Extraer y poblar categorías únicas en el datalist
+            const categoryList = document.getElementById('category-list');
+            const uniqueCategories = [...new Set(dishes.map(d => d.categoria).filter(Boolean))];
+            if (categoryList) {
+                categoryList.innerHTML = uniqueCategories.map(cat => `<option value="${cat}">`).join('');
+            }
+
             if (dishes.length === 0) {
                 dishesListContainer.innerHTML = "<p>No hay platos cargados.</p>";
                 return;

@@ -63,13 +63,14 @@
                         <div class="input-row">
                             <div class="input-group">
                                 <label for="dish-category">Categoría</label>
-                                <select id="dish-category" required>
-                                    <option value="Destacados">Destacados</option>
-                                    <option value="Principales">Principales</option>
-                                    <option value="Entradas">Entradas</option>
-                                    <option value="Bebidas">Bebidas</option>
-                                    <option value="Postres">Postres</option>
-                                </select>
+                                <input type="text" id="dish-category" list="category-list" placeholder="Ej: Principales, Bebidas..." required>
+                                <datalist id="category-list">
+                                    <option value="Destacados">
+                                    <option value="Principales">
+                                    <option value="Entradas">
+                                    <option value="Bebidas">
+                                    <option value="Postres">
+                                </datalist>
                             </div>
                             <div class="input-group">
                                 <label for="dish-order">Orden de aparición</label>

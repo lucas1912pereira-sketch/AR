@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // (Los listeners de AR se asignarán dinámicamente al abrir el visor)
+    let todosLosPlatos = [];
+    const categoryNav = document.getElementById('category-nav');
 
     async function cargarMenu() {
         if (!menuContainer) return;
@@ -74,12 +76,49 @@ document.addEventListener('DOMContentLoaded', () => {
             const respuesta = await fetch(API_URL);
             if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
-            let platos = await respuesta.json();
+            todosLosPlatos = await respuesta.json();
 
-            renderizarMenu(platos);
+            if (categoryNav) {
+                const uniqueCats = [...new Set(todosLosPlatos.map(p => p.categoria).filter(Boolean))];
+                let buttonsHTML = `<button class="active" data-categoria="Destacados">Destacados</button>`;
+                uniqueCats.forEach(cat => {
+                    // No duplicar Destacados si alguien lo puso como categoría literal
+                    if(cat !== "Destacados") {
+                        buttonsHTML += `<button data-categoria="${cat}">${cat}</button>`;
+                    }
+                });
+                categoryNav.innerHTML = buttonsHTML;
+
+                categoryNav.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        categoryNav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        filtrarYRenderizar(e.target.getAttribute('data-categoria'));
+                    });
+                });
+            }
+
+            filtrarYRenderizar("Destacados");
         } catch (error) {
             console.error("Error al obtener el menú:", error);
             menuContainer.innerHTML = "<p class='error'>No se pudo cargar el menú en este momento.</p>";
+        }
+    }
+
+    function filtrarYRenderizar(categoriaSeleccionada) {
+        let platosFiltrados = [];
+        if (categoriaSeleccionada === "Destacados") {
+            platosFiltrados = todosLosPlatos.filter(p => p.destacado === 1);
+            // Si no hay destacados, mostrar todos como fallback
+            if (platosFiltrados.length === 0) platosFiltrados = todosLosPlatos;
+        } else {
+            platosFiltrados = todosLosPlatos.filter(p => p.categoria === categoriaSeleccionada);
+        }
+        
+        if (platosFiltrados.length === 0) {
+            menuContainer.innerHTML = "<p class='loading'>No hay platos en esta categoría.</p>";
+        } else {
+            renderizarMenu(platosFiltrados);
         }
     }
 
