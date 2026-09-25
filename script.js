@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
             arViewer = document.createElement('model-viewer');
             arViewer.id = 'ar-viewer';
             arViewer.setAttribute('ar', '');
-            arViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+            arViewer.setAttribute('ar-modes', 'scene-viewer webxr quick-look');
             arViewer.setAttribute('ar-scale', 'auto');
             arViewer.setAttribute('ar-placement', 'floor');
             arViewer.setAttribute('camera-controls', '');
