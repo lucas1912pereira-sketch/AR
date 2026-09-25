@@ -275,9 +275,13 @@ ${plato.es_ar === 1 ? `
             arViewer.setAttribute('ar', '');
             // SOLO WEBXR y Quick Look (evita Scene Viewer nativo de Google)
             arViewer.setAttribute('ar-modes', 'webxr quick-look');
-            arViewer.setAttribute('ar-scale', 'fixed');
+            arViewer.setAttribute('ar-scale', 'auto');
             arViewer.setAttribute('ar-placement', 'floor');
             arViewer.setAttribute('camera-controls', '');
+            
+            // Restringir rotación vertical (arriba/abajo) en el visor 3D
+            arViewer.setAttribute('min-camera-orbit', 'auto 80deg auto');
+            arViewer.setAttribute('max-camera-orbit', 'auto 80deg auto');
             arViewer.setAttribute('auto-rotate', '');
             arViewer.setAttribute('rotation-per-second', '20deg');
             arViewer.setAttribute('bounds', 'tight');
@@ -293,18 +297,43 @@ ${plato.es_ar === 1 ? `
             arViewer.setAttribute('disable-pan', '');
             arViewer.setAttribute('disable-tap', '');
 
+            // Mensaje personalizado en AR
+            const arMsg = document.createElement('div');
+            arMsg.id = 'ar-instructions';
+            arMsg.className = 'absolute bottom-10 left-1/2 -translate-x-1/2 bg-black/80 text-white px-5 py-3 rounded-2xl text-center font-bold text-[13px] hidden w-[90%] max-w-[350px] shadow-2xl border border-white/20 z-50 pointer-events-none transition-opacity duration-500';
+            arMsg.innerHTML = '✨ Apuntá a una superficie plana y mové el celular para mejor experiencia. (Pellizcá para ajustar el tamaño)';
+            arViewer.appendChild(arMsg);
+
+            // Botón X explícito grande por si el default no les gusta
+            const exitBtn = document.createElement('button');
+            exitBtn.setAttribute('slot', 'exit-webxr-ar-button');
+            exitBtn.className = 'absolute top-6 left-6 w-12 h-12 bg-black/60 text-white rounded-full flex items-center justify-center border border-white/20 shadow-lg z-50 cursor-pointer backdrop-blur-md';
+            exitBtn.innerHTML = '<span class="material-symbols-outlined text-[24px]">close</span>';
+            arViewer.appendChild(exitBtn);
+
             // Listeners de eventos (Solo se agregan 1 vez)
             arViewer.addEventListener('ar-status', (event) => {
                 if (event.detail.status === 'failed') {
                     console.warn('AR no soportado o fallido en este equipo');
-                    alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
                 }
                 if (event.detail.status === 'session-started') {
-                    // Ocultar del DOM (ahorra cálculos de composición visual del navegador)
-                    arViewer.style.visibility = 'hidden';
+                    const msg = document.getElementById('ar-instructions');
+                    if (msg) {
+                        msg.classList.remove('hidden');
+                        msg.style.opacity = '1';
+                        // Desvanecer después de 6 segundos
+                        setTimeout(() => {
+                            msg.style.opacity = '0';
+                            setTimeout(() => msg.classList.add('hidden'), 500);
+                        }, 6000);
+                    }
                 }
                 if (event.detail.status === 'not-presenting') {
-                    arViewer.style.visibility = 'visible';
+                    const msg = document.getElementById('ar-instructions');
+                    if (msg) {
+                        msg.classList.add('hidden');
+                        msg.style.opacity = '1';
+                    }
                 }
             });
 
