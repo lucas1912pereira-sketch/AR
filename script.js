@@ -35,20 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const banner = document.getElementById('banner-abrir-safari');
             
             if (esAndroid) {
-                // En Android, intentamos forzar la apertura en el navegador predeterminado mediante intent
+                // En Android, intentamos forzar la apertura en Chrome (WebXR no funciona en WebView)
                 const currentUrl = window.location.href.replace(/^https?:\/\//, '');
                 window.location.href = `intent://${currentUrl}#Intent;scheme=https;end;`;
                 
-                // Si la redirección falla o no es soportada, mostramos un aviso
                 if (banner) {
                     banner.querySelector('p').innerHTML = "⚠️ Tu navegador actual bloquea la Realidad Aumentada. Tocá los 3 puntos arriba a la derecha y seleccioná 'Abrir en el navegador'.";
                     banner.classList.remove('hidden');
                 }
             } else if (esIOS) {
-                esInAppBrowserIOS = true;
-                if (banner) {
-                    banner.querySelector('p').innerHTML = "⚠️ Tu navegador actual bloquea la Realidad Aumentada. Tocá el ícono inferior (brújula) y seleccioná 'Abrir en Safari'.";
-                    banner.classList.remove('hidden');
+                // En iOS, WhatsApp SÍ soporta AR Quick Look de forma nativa. 
+                // Solo mostramos el cartel de advertencia para Instagram y Facebook que lo bloquean.
+                const esBloqueadorFuerteIOS = /FBAN|FBAV|Instagram/i.test(ua);
+                if (esBloqueadorFuerteIOS) {
+                    esInAppBrowserIOS = true;
+                    if (banner) {
+                        banner.querySelector('p').innerHTML = "⚠️ Instagram/Facebook bloquean el modo AR. Tocá el ícono inferior (brújula) y seleccioná 'Abrir en Safari'.";
+                        banner.classList.remove('hidden');
+                    }
                 }
             }
         }
@@ -300,8 +304,9 @@ ${plato.es_ar === 1 ? `
             // Mensaje personalizado en AR
             const arMsg = document.createElement('div');
             arMsg.id = 'ar-instructions';
-            arMsg.className = 'absolute bottom-10 left-1/2 -translate-x-1/2 bg-black/80 text-white px-5 py-3 rounded-2xl text-center font-bold text-[13px] hidden w-[90%] max-w-[350px] shadow-2xl border border-white/20 z-50 pointer-events-none transition-opacity duration-500';
-            arMsg.innerHTML = '✨ Apuntá a una superficie plana y mové el celular para mejor experiencia. (Pellizcá para ajustar el tamaño)';
+            // Subimos el mensaje a bottom-24 (o top) para que no lo corte la barra de navegación del celular
+            arMsg.className = 'absolute bottom-28 left-1/2 -translate-x-1/2 bg-black/80 text-white px-4 py-3 rounded-2xl text-center font-bold text-[13px] hidden w-[85%] max-w-[320px] shadow-2xl border border-white/20 z-50 pointer-events-none transition-opacity duration-500 leading-snug';
+            arMsg.innerHTML = '✨ Apuntá a una mesa y mové el celular despacio. <br><span class="text-amber-gold/90 text-[11px] font-normal">(Pellizcá para ajustar el tamaño)</span>';
             arViewer.appendChild(arMsg);
 
             // Botón X explícito grande por si el default no les gusta
