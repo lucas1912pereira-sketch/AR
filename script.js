@@ -265,6 +265,11 @@ ${plato.es_ar === 1 ? `
         const container = document.getElementById('viewport-3d');
         
         if (!arViewer) {
+            // Asegurar que el decodificador Meshopt esté enganchado a la clase antes de crear el elemento
+            const MVClass = customElements.get('model-viewer');
+            if (MVClass && window.MeshoptDecoder) {
+                MVClass.meshoptDecoder = window.MeshoptDecoder;
+            }
             arViewer = document.createElement('model-viewer');
             arViewer.id = 'ar-viewer';
             arViewer.setAttribute('ar', '');
