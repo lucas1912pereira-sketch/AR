@@ -176,10 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btnSave.disabled = true;
 
         const id = dishIdInput.value;
-        const name = document.getElementById('dish-name').value;
-        const price = document.getElementById('dish-price').value;
-        const desc = document.getElementById('dish-desc').value;
-        const category = document.getElementById('dish-category').value;
+        const name = document.getElementById('dish-name').value.trim();
+        const price = document.getElementById('dish-price').value.trim();
+        const desc = document.getElementById('dish-desc').value.trim();
+        const category = document.getElementById('dish-category').value.trim();
         const order = document.getElementById('dish-order').value;
         const priceOffer = document.getElementById('dish-price-offer').value;
         const featured = document.getElementById('dish-featured').checked ? 1 : 0;
@@ -187,6 +187,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileImg = document.getElementById('file-img').files[0];
         const fileGlb = document.getElementById('file-glb').files[0];
         const fileUsdz = document.getElementById('file-usdz').files[0];
+
+        // --- VALIDACIONES ---
+        if (!name || !price || !category) {
+            alert("⚠️ Por favor, completá el nombre, precio y categoría. Son obligatorios.");
+            btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
+            btnSave.disabled = false;
+            return;
+        }
+
+        if (!id && !fileImg) {
+            alert("⚠️ Por favor, subí una foto del plato. Es obligatoria para los platos nuevos.");
+            btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
+            btnSave.disabled = false;
+            return;
+        }
+
+        // Prevenir platos duplicados (por nombre exacto)
+        // Solo verificamos si es un plato nuevo, o si le cambiaron el nombre a uno existente
+        const dishListsElement = document.getElementById('admin-dishes-list');
+        const existingDishesNames = Array.from(dishListsElement.querySelectorAll('.admin-dish-name')).map(el => el.textContent.split(' (Gs')[0].trim().toLowerCase());
+        
+        // Forma más segura buscando en nuestra data obtenida
+        try {
+            const resVal = await fetch(API_URL);
+            const dataVal = await resVal.json();
+            const esDuplicado = dataVal.find(p => p.nombre.toLowerCase() === name.toLowerCase() && p.id.toString() !== id);
+            
+            if (esDuplicado) {
+                alert(`⚠️ Ya existe un plato con el nombre "${name}". No podés tener platos repetidos.`);
+                btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
+                btnSave.disabled = false;
+                return;
+            }
+        } catch(e) {
+            console.error("No se pudo validar duplicidad", e);
+        }
+
+        // -------------------
 
         const formData = new FormData();
         if (id) formData.append('id', id);
