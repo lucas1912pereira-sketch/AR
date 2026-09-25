@@ -67,18 +67,107 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDragAndDrop('drop-usdz', 'file-usdz');
 
     // --- FORM SUBMISSION ---
+    // --- FORM SUBMISSION ---
     const form = document.getElementById('add-dish-form');
     const statusDiv = document.getElementById('upload-status');
     const btnSave = document.getElementById('btn-save-dish');
+    const btnCancel = document.getElementById('btn-cancel-edit');
+    const dishIdInput = document.getElementById('dish-id');
+    const dishesListContainer = document.getElementById('admin-dishes-list');
     const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
+
+    // Cargar la lista actual de platos
+    async function loadDishes() {
+        try {
+            const res = await fetch(API_URL);
+            const dishes = await res.json();
+            if (dishes.length === 0) {
+                dishesListContainer.innerHTML = "<p>No hay platos cargados.</p>";
+                return;
+            }
+
+            dishesListContainer.innerHTML = dishes.map(dish => `
+                <div class="admin-dish-item">
+                    <div class="admin-dish-info">
+                        <span class="admin-dish-name">${dish.nombre} (Gs. ${dish.precio})</span>
+                        <span class="admin-dish-meta">Cat: ${dish.categoria} | AR: ${dish.es_ar ? 'Sí' : 'No'} | Destacado: ${dish.destacado ? 'Sí' : 'No'}</span>
+                    </div>
+                    <div class="admin-dish-actions">
+                        <button class="btn-edit" data-id="${dish.id}" data-dish='${JSON.stringify(dish).replace(/'/g, "&apos;")}'>
+                            <i class="ph ph-pencil-simple"></i> Editar
+                        </button>
+                        <button class="btn-delete" data-id="${dish.id}">
+                            <i class="ph ph-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Asignar eventos de edición y eliminación
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const dish = JSON.parse(e.currentTarget.getAttribute('data-dish'));
+                    populateForm(dish);
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    if (confirm("¿Estás seguro de que querés eliminar este plato?")) {
+                        const id = e.currentTarget.getAttribute('data-id');
+                        await deleteDish(id);
+                    }
+                });
+            });
+
+        } catch (error) {
+            dishesListContainer.innerHTML = "<p class='error'>Error al cargar los platos.</p>";
+        }
+    }
+
+    async function deleteDish(id) {
+        try {
+            const res = await fetch(`${API_URL}?id=${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                loadDishes();
+            } else {
+                alert("Error al eliminar");
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function populateForm(dish) {
+        dishIdInput.value = dish.id;
+        document.getElementById('dish-name').value = dish.nombre;
+        document.getElementById('dish-price').value = dish.precio;
+        document.getElementById('dish-desc').value = dish.descripcion || "";
+        document.getElementById('dish-category').value = dish.categoria;
+        document.getElementById('dish-order').value = dish.orden || 100;
+        document.getElementById('dish-price-offer').value = dish.precio_oferta || "";
+        document.getElementById('dish-featured').checked = dish.destacado === 1;
+
+        btnSave.innerHTML = '<i class="ph ph-floppy-disk"></i> Actualizar Plato';
+        btnCancel.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    btnCancel.addEventListener('click', () => {
+        form.reset();
+        dishIdInput.value = "";
+        btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
+        btnCancel.classList.add('hidden');
+    });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const btnOriginalText = btnSave.innerHTML;
-        btnSave.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Subiendo...';
+        btnSave.innerHTML = '<i class="ph ph-spinner animate-spin"></i> Guardando...';
         btnSave.disabled = true;
 
+        const id = dishIdInput.value;
         const name = document.getElementById('dish-name').value;
         const price = document.getElementById('dish-price').value;
         const desc = document.getElementById('dish-desc').value;
@@ -92,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fileUsdz = document.getElementById('file-usdz').files[0];
 
         const formData = new FormData();
+        if (id) formData.append('id', id);
         formData.append('nombre', name);
         formData.append('precio', price);
         formData.append('descripcion', desc);
@@ -100,47 +190,48 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('destacado', featured);
         if (priceOffer) formData.append('precio_oferta', priceOffer);
         
-        formData.append('es_ar', (fileGlb || fileUsdz) ? 1 : 0);
-        
+        // Si hay archivos nuevos subidos, los enviamos
         if (fileImg) formData.append('imagen', fileImg);
         if (fileGlb) formData.append('modelo_glb', fileGlb);
         if (fileUsdz) formData.append('modelo_usdz', fileUsdz);
 
+        // Determinamos si es AR (si subió un archivo o si ya era AR antes)
+        // Por simplificación, el worker manejará esto si hay modelo_glb_url
+        
         try {
             const respuesta = await fetch(API_URL, {
-                method: 'POST',
+                method: 'POST', // El Worker decidirá si es INSERT o UPDATE según si hay ID
                 body: formData
             });
 
             if (!respuesta.ok) throw new Error("Error en el servidor al guardar el plato");
 
-            statusDiv.textContent = "¡Plato guardado con éxito! El menú ha sido actualizado.";
+            statusDiv.textContent = id ? "¡Plato actualizado con éxito!" : "¡Plato guardado con éxito!";
             statusDiv.className = "upload-status success";
             
-            // Limpiar formulario
             form.reset();
-            ['drop-img', 'drop-glb', 'drop-usdz'].forEach(id => {
-                const box = document.getElementById(id);
+            dishIdInput.value = "";
+            btnCancel.classList.add('hidden');
+            ['drop-img', 'drop-glb', 'drop-usdz'].forEach(boxId => {
+                const box = document.getElementById(boxId);
                 box.classList.remove('has-file');
-                
-                // Restaurar iconos originales
-                if(id === 'drop-img') box.querySelector('i').className = 'ph ph-image';
-                if(id === 'drop-glb') box.querySelector('i').className = 'ph ph-cube';
-                if(id === 'drop-usdz') box.querySelector('i').className = 'ph ph-apple-logo';
-                
-                // Restaurar textos originales
-                if(id === 'drop-img') box.querySelector('span').textContent = 'Foto del Plato';
-                if(id === 'drop-glb') box.querySelector('span').textContent = 'Modelo 3D (Android)';
-                if(id === 'drop-usdz') box.querySelector('span').textContent = 'Modelo 3D (iOS)';
+                if(boxId === 'drop-img') { box.querySelector('i').className = 'ph ph-image'; box.querySelector('span').textContent = 'Foto del Plato'; }
+                if(boxId === 'drop-glb') { box.querySelector('i').className = 'ph ph-cube'; box.querySelector('span').textContent = 'Modelo 3D (Android)'; }
+                if(boxId === 'drop-usdz') { box.querySelector('i').className = 'ph ph-apple-logo'; box.querySelector('span').textContent = 'Modelo 3D (iOS)'; }
             });
+
+            loadDishes();
 
         } catch (error) {
             console.error("Error al guardar:", error);
-            statusDiv.textContent = "Error al guardar el plato. Revisá la consola para más detalles.";
+            statusDiv.textContent = "Error al guardar el plato.";
             statusDiv.className = "upload-status error";
         } finally {
-            btnSave.innerHTML = btnOriginalText;
+            btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
             btnSave.disabled = false;
         }
     });
+
+    // Cargar los platos al iniciar el panel
+    loadDishes();
 });

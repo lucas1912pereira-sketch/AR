@@ -342,3 +342,59 @@ input:focus, select:focus, textarea:focus {
     color: var(--danger-color);
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
+
+/* =========================================================
+   LISTA DE PLATOS (EDIT/DELETE)
+   ========================================================= */
+.dishes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-dish-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.admin-dish-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-dish-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.admin-dish-meta {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.admin-dish-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit, .btn-delete {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.btn-edit:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary-color); border-color: var(--primary-color); }
+.btn-delete:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: #ef4444; }

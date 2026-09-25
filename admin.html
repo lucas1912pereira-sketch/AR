@@ -44,6 +44,7 @@
                 <p class="subtitle">Cargá los detalles y los modelos 3D para tu menú.</p>
 
                 <form id="add-dish-form" class="dish-form">
+                    <input type="hidden" id="dish-id" value="">
                     
                     <!-- Información Básica -->
                     <div class="form-section">
@@ -129,8 +130,20 @@
                         <button type="submit" class="btn-primary" id="btn-save-dish">
                             <i class="ph ph-check-circle"></i> Guardar y Publicar
                         </button>
+                        <button type="button" class="btn-outline hidden" id="btn-cancel-edit">
+                            Cancelar Edición
+                        </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- Lista de Platos para Editar / Eliminar -->
+            <div class="form-card" style="margin-top: 30px;">
+                <h2>Menú Actual</h2>
+                <p class="subtitle">Gestioná los platos que ya están publicados.</p>
+                <div id="admin-dishes-list" class="dishes-list">
+                    <p class="loading">Cargando platos...</p>
+                </div>
             </div>
         </main>
     </div>
