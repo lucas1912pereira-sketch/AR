@@ -39,8 +39,15 @@
         </header>
 
         <main class="dashboard-content">
-            <div class="form-card">
-                <h2>Añadir Nuevo Plato</h2>
+            
+            <div class="admin-tabs-container" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="tab-new" class="btn-outline active" style="background: rgba(99, 102, 241, 0.2); border-color: var(--primary-color);"><i class="ph ph-plus"></i> Nuevo / Editar</button>
+                <button id="tab-list" class="btn-outline"><i class="ph ph-list"></i> Lista de Platos</button>
+            </div>
+
+            <div id="section-form">
+                <div class="form-card">
+                    <h2 id="form-title">Añadir Nuevo Plato</h2>
                 <p class="subtitle">Cargá los detalles y los modelos 3D para tu menú.</p>
 
                 <form id="add-dish-form" class="dish-form">
@@ -136,14 +143,17 @@
                         </button>
                     </div>
                 </form>
-            </div>
+            </div> <!-- Cierre de form-card -->
+            </div> <!-- Cierre de section-form -->
 
-            <!-- Lista de Platos para Editar / Eliminar -->
-            <div class="form-card" style="margin-top: 30px;">
-                <h2>Menú Actual</h2>
-                <p class="subtitle">Gestioná los platos que ya están publicados.</p>
-                <div id="admin-dishes-list" class="dishes-list">
-                    <p class="loading">Cargando platos...</p>
+            <div id="section-list" style="display: none;">
+                <!-- Lista de Platos para Editar / Eliminar -->
+                <div class="form-card">
+                    <h2>Menú Actual</h2>
+                    <p class="subtitle">Gestioná los platos que ya están publicados.</p>
+                    <div id="admin-dishes-list" class="dishes-list">
+                        <p class="loading">Cargando platos...</p>
+                    </div>
                 </div>
             </div>
         </main>

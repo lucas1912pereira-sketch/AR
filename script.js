@@ -3,17 +3,17 @@ const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
 
 document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
-    const modal3D = document.getElementById('modal-visor-3d');
+    const modal3D = document.getElementById('ar-modal');
     let arViewer = null;
-    const modelLoader = document.getElementById('model-loader');
+    const modelLoader = document.getElementById('modal-loading-state');
     
     const closeModalBtn = document.getElementById('close-modal-3d');
     const desktopWarning = document.getElementById('desktop-warning');
     
-    const modalTitle = document.getElementById('modal-3d-title');
-    const modalPrice = document.getElementById('modal-3d-price');
+    const modalTitle = document.getElementById('modal-dish-title');
+    const modalPrice = document.getElementById('modal-dish-price');
     const btnActivateAR = document.getElementById('btn-activate-ar');
-    const btnModalDelivery = document.getElementById('btn-modal-delivery');
+    const btnModalDelivery = document.getElementById('modal-wa-button');
 
     // Detección básica de móvil para advertir en Desktop
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Los listeners de AR se asignarán dinámicamente al abrir el visor)
     let todosLosPlatos = [];
-    const categoryNav = document.getElementById('category-nav');
+    const categoryNav = document.getElementById('nav-categories');
 
     async function cargarMenu() {
         if (!menuContainer) return;
@@ -80,19 +80,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (categoryNav) {
                 const uniqueCats = [...new Set(todosLosPlatos.map(p => p.categoria).filter(Boolean))];
-                let buttonsHTML = `<button class="active" data-categoria="Destacados">Destacados</button>`;
+                let buttonsHTML = `<button class="category-nav-btn px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 bg-amber-gold text-black font-bold shadow-[0_2px_14px_rgba(245,158,11,0.45)] hover:scale-105 active:scale-95" data-categoria="Destacados">Destacados</button>`;
                 uniqueCats.forEach(cat => {
                     // No duplicar Destacados si alguien lo puso como categoría literal
                     if(cat !== "Destacados") {
-                        buttonsHTML += `<button data-categoria="${cat}">${cat}</button>`;
+                        buttonsHTML += `<button class="category-nav-btn px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95" data-categoria="${cat}">${cat}</button>`;
                     }
                 });
                 categoryNav.innerHTML = buttonsHTML;
 
                 categoryNav.querySelectorAll('button').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        categoryNav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
+                        categoryNav.querySelectorAll('button').forEach(b => {
+                            b.className = "category-nav-btn px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95";
+                        });
+                        e.target.className = "category-nav-btn px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 bg-amber-gold text-black font-bold shadow-[0_2px_14px_rgba(245,158,11,0.45)] hover:scale-105 active:scale-95";
                         filtrarYRenderizar(e.target.getAttribute('data-categoria'));
                     });
                 });
@@ -134,32 +136,74 @@ document.addEventListener('DOMContentLoaded', () => {
             const precioGs = `Gs. ${precioFormateado}`;
 
             const tarjeta = document.createElement("div");
-            tarjeta.className = "plato-card"; 
+            tarjeta.className = "w-full"; 
             
             tarjeta.innerHTML = `
-                <div class="plato-img-container">
-                    <img src="${plato.imagen_url}" alt="${plato.nombre}" class="plato-img" loading="lazy">
-                    ${plato.es_ar === 1 ? '<span class="badge-ar">✨ 3D AR</span>' : ''}
-                </div>
-
-                <div class="plato-info">
-                    <span class="plato-categoria">${plato.categoria}</span>
-                    <h3>${plato.nombre}</h3>
-                    <p class="plato-desc">${plato.descripcion || ''}</p>
-                    <span class="plato-precio">${precioGs}</span>
-
-                    <div class="plato-acciones">
-                    ${plato.es_ar === 1 ? `
-                        <button class="btn-ar" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}">
-                        Inspeccionar en 3D
-                        </button>
-                    ` : ''}
-                    
-                    <button class="btn-delivery" data-nombre="${plato.nombre}" data-precio="${precioGs}">
-                        Pedir por WhatsApp
-                    </button>
-                    </div>
-                </div>
+<article class="group relative rounded-2xl bg-[#141416]/80 backdrop-blur-md border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-500 hover:border-amber-gold/40 hover:shadow-[0_25px_60px_rgba(245,158,11,0.2)]">
+<!-- Card Image Header -->
+<div class="relative w-full aspect-[16/11] overflow-hidden bg-black/60">
+<img alt="${plato.nombre}" class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-105" src="${plato.imagen_url}"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#141416] via-[#141416]/25 to-transparent"></div>
+<!-- 3D AR Floating Badge -->
+${plato.es_ar === 1 ? \`
+<div class="absolute top-4 right-4 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-gold/50 backdrop-blur-md shadow-xl text-amber-gold font-label-sm text-[12px] font-bold tracking-wide animate-pulse">
+<span>✨</span>
+<span>3D AR</span>
+</div>\` : ''}
+<!-- Quick Experience Pill Bottom-Left on Image -->
+<div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-zinc-200 font-label-sm text-[12px] bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-amber-gold">view_in_ar</span>
+<span>Proyección interactiva 1:1</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-6 md:p-8 flex flex-col">
+<!-- Category & Badges -->
+<div class="flex items-center justify-between gap-3 mb-2.5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-chef-red"></span>
+<span class="font-label-sm text-[11px] font-bold tracking-widest text-amber-gold uppercase">
+                  ${plato.categoria}
+                </span>
+</div>
+<span class="inline-flex items-center gap-1.5 text-emerald-400 font-label-sm text-[11px] bg-emerald-950/70 border border-emerald-500/40 px-2.5 py-0.5 rounded-full font-semibold shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> DISPONIBLE
+              </span>
+</div>
+<!-- Title & Ingredients -->
+<h2 class="font-headline-md text-[25px] md:text-[29px] text-white font-bold tracking-tight mb-2.5 leading-snug">
+              ${plato.nombre}
+            </h2>
+<p class="font-body-md text-zinc-300 text-[14px] leading-relaxed mb-6 font-normal">
+              ${plato.descripcion || ''}
+            </p>
+<!-- Pricing Banner -->
+<div class="flex items-baseline justify-between mb-6 bg-black/50 border border-white/10 px-5 py-3.5 rounded-xl backdrop-blur-sm">
+<span class="font-label-sm text-zinc-400 uppercase font-bold tracking-wider text-[11px]">Precio de Carta</span>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-amber-gold font-black text-[24px] tracking-tight">
+                  ${precioGs}
+                </span>
+</div>
+</div>
+<!-- Action CTAs Stack -->
+<div class="flex flex-col gap-3.5 w-full">
+<!-- Primary 3D/AR Inspection Button -->
+${plato.es_ar === 1 ? \`
+<button class="btn-ar group/btn relative w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-amber hover:brightness-110 active:scale-[0.98] transition-all duration-300 overflow-hidden cursor-pointer" data-modelo="${plato.modelo_glb_url}" data-usdz="${plato.modelo_usdz_url || ''}" data-nombre="${plato.nombre}" data-precio="${precioGs}" data-imagen="${plato.imagen_url}" type="button">
+<div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-in-out"></div>
+<span class="material-symbols-outlined text-[22px] transition-transform duration-300 group-hover/btn:rotate-12">view_in_ar</span>
+<span class="tracking-wide">Inspeccionar en 3D</span>
+</button>
+\` : ''}
+<!-- WhatsApp Direct Order Button -->
+<button class="btn-delivery w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-emerald hover:brightness-110 active:scale-[0.98] transition-all duration-300 cursor-pointer" data-nombre="${plato.nombre}" data-precio="${precioGs}">
+<span class="text-[19px]">💬</span>
+<span class="tracking-wide">Pedir este plato por WhatsApp</span>
+</button>
+</div>
+</div>
+</article>
             `;
 
             menuContainer.appendChild(tarjeta);
@@ -192,13 +236,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Mostrar el loader visual y el modal
         if (modelLoader) {
+            modelLoader.style.opacity = '1';
             modelLoader.style.display = 'flex';
             const loaderText = modelLoader.querySelector('p');
-            if (loaderText) loaderText.textContent = "Cargando modelo 3D...";
-            const spinner = modelLoader.querySelector('.spinner');
+            if (loaderText) loaderText.textContent = "Generando proyección 3D...";
+            const spinner = modelLoader.querySelector('div');
             if (spinner) spinner.style.display = 'block';
         }
-        modal3D.classList.remove('hidden');
+        
+        modal3D.classList.remove('pointer-events-none', 'opacity-0');
+        modal3D.classList.add('opacity-100');
+        const panel = document.getElementById('modal-panel');
+        if (panel) {
+            panel.classList.remove('scale-95');
+            panel.classList.add('scale-100');
+        }
 
         // 3. Llenar los datos del plato en el header del modal
         if (modalTitle) modalTitle.textContent = nombre;
@@ -210,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 5. Crear el visor 3D si no existe (Reutilizar instancia para no agotar contextos WebGL)
-        const container = document.querySelector('.model-viewer-container');
+        const container = document.getElementById('viewport-3d');
         
         if (!arViewer) {
             arViewer = document.createElement('model-viewer');
@@ -239,7 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             arViewer.addEventListener('load', () => {
-                if (modelLoader) modelLoader.style.display = 'none';
+                if (modelLoader) {
+                    modelLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        modelLoader.style.display = 'none';
+                    }, 400);
+                }
             });
 
             arViewer.addEventListener('error', (event) => {
@@ -247,11 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modelLoader) {
                     const loaderText = modelLoader.querySelector('p');
                     if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
-                    const spinner = modelLoader.querySelector('.spinner');
+                    const spinner = modelLoader.querySelector('div');
                     if (spinner) spinner.style.display = 'none';
                 }
             });
 
+            container.innerHTML = ''; // Clear placeholder
             container.appendChild(arViewer);
         }
 
@@ -312,10 +370,23 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
-    // Cerrar el modal
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', () => {
-            if (modal3D) modal3D.classList.add('hidden');
+            if (!modal3D) return;
+            const panel = document.getElementById('modal-panel');
+            if (panel) {
+                panel.classList.remove('scale-100');
+                panel.classList.add('scale-95');
+            }
+            modal3D.classList.remove('opacity-100');
+            modal3D.classList.add('opacity-0');
+            setTimeout(() => {
+                modal3D.classList.add('pointer-events-none');
+                if (arViewer) {
+                    arViewer.removeAttribute('src');
+                    arViewer.removeAttribute('ios-src');
+                }
+            }, 250);
         });
     }
 

@@ -9,8 +9,6 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Syne:wght@600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/meshoptimizer@0.21.0/meshopt_decoder.js"></script>
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 <style>
     @layer base {
       html, body { margin:0; padding:0; }
@@ -290,7 +288,13 @@ void main() {
 <span class="font-label-sm text-[10px] tracking-[0.2em] text-zinc-400 uppercase font-semibold">Artisanal Bistro &amp; Burgers</span>
 </div>
 </a>
-<!-- Category Navigation (Desktop) - Removed to avoid duplication with main nav -->
+<!-- Category Navigation (Desktop) -->
+<nav class="hidden md:flex items-center gap-1 p-1 bg-surface-container-lowest/80 border border-white/10 backdrop-blur-md rounded-full shadow-inner" id="nav-categories">
+<button class="category-nav-btn px-4 py-1.5 rounded-full font-label-md text-[13px] transition-all bg-gradient-to-r from-amber-gold to-amber-glow text-black font-bold shadow-[0_0_15px_rgba(245,158,11,0.4)]" data-target="destacados" onclick="switchCategory('destacados')">Destacados</button>
+<button class="category-nav-btn px-4 py-1.5 rounded-full font-label-md text-[13px] transition-all text-zinc-400 hover:text-white hover:bg-white/5" data-target="hamburguesas" onclick="switchCategory('hamburguesas')">Hamburguesas</button>
+<button class="category-nav-btn px-4 py-1.5 rounded-full font-label-md text-[13px] transition-all text-zinc-400 hover:text-white hover:bg-white/5" data-target="principales" onclick="switchCategory('principales')">Principales</button>
+<button class="category-nav-btn px-4 py-1.5 rounded-full font-label-md text-[13px] transition-all text-zinc-400 hover:text-white hover:bg-white/5" data-target="bebidas" onclick="switchCategory('bebidas')">Bebidas &amp; Postres</button>
+</nav>
 <!-- Right Header Actions -->
 <div class="flex items-center gap-2.5">
 <a class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-high hover:bg-white/10 border border-white/10 text-amber-gold font-label-sm text-[12px] uppercase tracking-wider font-semibold transition-all hover:scale-105 shadow-sm active:scale-95" href="./admin.html">
@@ -330,11 +334,86 @@ void main() {
           Visualizá nuestros cortes y hamburguesas artesanales en tu propia mesa antes de ordenar con precisión milimétrica y realismo 3D.
         </p>
 <!-- Category Mobile/Desktop Filter Pills -->
-<div id="nav-categories" class="flex flex-wrap items-center justify-center p-1.5 rounded-full bg-surface-container-lowest/90 border border-white/10 shadow-2xl backdrop-blur-md gap-1">
+<div class="flex flex-wrap items-center justify-center p-1.5 rounded-full bg-surface-container-lowest/90 border border-white/10 shadow-2xl backdrop-blur-md gap-1">
+<button class="px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 bg-amber-gold text-black font-bold shadow-[0_2px_14px_rgba(245,158,11,0.45)] hover:scale-105 active:scale-95" id="tab-destacados" onclick="switchCategory('destacados')">
+            Destacados
+          </button>
+<button class="px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95" id="tab-hamburguesas" onclick="switchCategory('hamburguesas')">
+            Hamburguesas
+          </button>
+<button class="px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95" id="tab-principales" onclick="switchCategory('principales')">
+            Principales
+          </button>
+<button class="px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95" id="tab-bebidas" onclick="switchCategory('bebidas')">
+            Bebidas &amp; Postres
+          </button>
 </div>
 </div>
 <!-- Main Showcase Grid Container -->
-<div id="menu-container" class="flex flex-col gap-6 w-full"></div>
+<div class="w-full max-w-xl mx-auto pb-8">
+<!-- Dish Gourmet Dark Luxury Glass Card -->
+<article class="group relative rounded-2xl bg-[#141416]/80 backdrop-blur-md border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden transition-all duration-500 hover:border-amber-gold/40 hover:shadow-[0_25px_60px_rgba(245,158,11,0.2)]">
+<!-- Card Image Header -->
+<div class="relative w-full aspect-[16/11] overflow-hidden bg-black/60">
+<img alt="Hamburguesa Artesanal Punto Cheff" class="w-full h-full object-cover transform duration-700 ease-out group-hover:scale-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UI-060NZdHXYTOl8FTzPtscmiKHDGuDvw86BAlNgyVylMLo3svXf8KP9VqrELFJiaD3Ry1k20sE0ic1Pt4QZF8ljPDn6Pu5Wm8gOFH91F_NQP7CRwg0D6Asf_5zosqWZouH2IskzyivjZkF5rHQkjcE5-KdhCpzs0-yJ6iuHDqqqPdsSm5bVxjx3Me2LA6GZsDa80oLwhHFPuQKzIls9zrIAYeNdUe_ZPmLvuerR4vfFpwtXvGbrlc-w"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#141416] via-[#141416]/25 to-transparent"></div>
+<!-- 3D AR Floating Badge -->
+<div class="absolute top-4 right-4 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/80 border border-amber-gold/50 backdrop-blur-md shadow-xl text-amber-gold font-label-sm text-[12px] font-bold tracking-wide animate-pulse">
+<span>✨</span>
+<span>3D AR</span>
+</div>
+<!-- Quick Experience Pill Bottom-Left on Image -->
+<div class="absolute bottom-4 left-4 flex items-center gap-1.5 text-zinc-200 font-label-sm text-[12px] bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
+<span class="material-symbols-outlined text-[16px] text-amber-gold">view_in_ar</span>
+<span>Proyección interactiva 1:1</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-6 md:p-8 flex flex-col">
+<!-- Category & Badges -->
+<div class="flex items-center justify-between gap-3 mb-2.5">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-chef-red"></span>
+<span class="font-label-sm text-[11px] font-bold tracking-widest text-amber-gold uppercase" id="card-category-label">
+                  ESPECIALIDADES ARTESANALES
+                </span>
+</div>
+<span class="inline-flex items-center gap-1.5 text-emerald-400 font-label-sm text-[11px] bg-emerald-950/70 border border-emerald-500/40 px-2.5 py-0.5 rounded-full font-semibold shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> DISPONIBLE
+              </span>
+</div>
+<!-- Title & Ingredients -->
+<h2 class="font-headline-md text-[25px] md:text-[29px] text-white font-bold tracking-tight mb-2.5 leading-snug" id="card-dish-title">
+              Hamburguesa Artesanal Punto Cheff
+            </h2>
+<p class="font-body-md text-zinc-300 text-[14px] leading-relaxed mb-6 font-normal" id="card-dish-desc">
+              Blend de carne vacuna seleccionada a fuego vivo, queso cheddar fundido, panceta crocante y pan brioche artesanal tostado a la manteca. Servida con papas rústicas al romero.
+            </p>
+<!-- Pricing Banner -->
+<div class="flex items-baseline justify-between mb-6 bg-black/50 border border-white/10 px-5 py-3.5 rounded-xl backdrop-blur-sm">
+<span class="font-label-sm text-zinc-400 uppercase font-bold tracking-wider text-[11px]">Precio de Carta</span>
+<div class="flex items-baseline gap-1">
+<span class="font-headline-md text-amber-gold font-black text-[24px] tracking-tight" id="card-dish-price">
+                  Gs. 50.000
+                </span>
+</div>
+</div>
+<!-- Action CTAs Stack with Vibrant Microinteractions & Glow -->
+<div class="flex flex-col gap-3.5 w-full">
+<!-- Primary 3D/AR Inspection Button -->
+<button class="group/btn relative w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-amber hover:brightness-110 active:scale-[0.98] transition-all duration-300 overflow-hidden cursor-pointer" onclick="openArModal('Hamburguesa Artesanal Punto Cheff', 'Gs. 50.000')" type="button">
+<div class="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 ease-in-out"></div>
+<span class="material-symbols-outlined text-[22px] transition-transform duration-300 group-hover/btn:rotate-12">view_in_ar</span>
+<span class="tracking-wide">Inspeccionar en 3D</span>
+</button>
+<!-- WhatsApp Direct Order Button -->
+<a class="w-full h-13 py-3 px-6 rounded-xl bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 animate-glow-emerald hover:brightness-110 active:scale-[0.98] transition-all duration-300 cursor-pointer" href="https://wa.me/?text=Hola%20Punto%20Cheff%2C%20quisiera%20pedir%20este%20plato%3A%20Hamburguesa%20Artesanal%20Punto%20Cheff%20(Gs.%2050.000)" id="card-wa-btn" rel="noopener noreferrer" target="_blank">
+<span class="text-[19px]">💬</span>
+<span class="tracking-wide">Pedir este plato por WhatsApp</span>
+</a>
+</div>
+</div>
+</article>
 <!-- Punto Cheff Highlights Bento Grid -->
 <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3.5">
 <div class="p-4 rounded-xl bg-surface-container-low/70 backdrop-blur-md border border-white/10 flex items-center gap-4 shadow-sm hover:border-amber-gold/30 transition-colors">
@@ -375,7 +454,7 @@ void main() {
 <span class="font-label-sm text-[11px] text-zinc-300 uppercase tracking-widest font-bold">Punto Cheff · Simulación 3D &amp; AR</span>
 </div>
 <!-- Modal Close Button '×' -->
-<button aria-label="Cerrar modal" class="w-8 h-8 rounded-full bg-surface-container hover:bg-white/10 flex items-center justify-center text-zinc-300 hover:text-white font-headline-md text-headline-md transition-colors" id="close-modal-3d" type="button">
+<button aria-label="Cerrar modal" class="w-8 h-8 rounded-full bg-surface-container hover:bg-white/10 flex items-center justify-center text-zinc-300 hover:text-white font-headline-md text-headline-md transition-colors" onclick="closeArModal()" type="button">
               ×
             </button>
 </div>
@@ -433,7 +512,7 @@ void main() {
 </div>
 <!-- AR Launch Button -->
 <div class="flex flex-col gap-1.5">
-<button class="w-full h-12 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(245,158,11,0.35)] hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer" id="btn-activate-ar" type="button">
+<button class="w-full h-12 px-6 rounded-xl bg-gradient-to-r from-amber-gold via-amber-glow to-amber-500 text-black font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(245,158,11,0.35)] hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer" onclick="triggerArLaunch()" type="button">
 <span class="material-symbols-outlined text-[20px]">view_in_ar</span>
 <span>Proyectar en tu mesa (AR)</span>
 </button>
@@ -476,6 +555,145 @@ void main() {
 </div>
 </footer>
 </div>
+<!-- Interactive Logic -->
+<script>
+    function switchCategory(category) {
+      const tabDestacados = document.getElementById('tab-destacados');
+      const tabHamburguesas = document.getElementById('tab-hamburguesas');
+      const tabPrincipales = document.getElementById('tab-principales');
+      const tabBebidas = document.getElementById('tab-bebidas');
+      const categoryLabel = document.getElementById('card-category-label');
+      const title = document.getElementById('card-dish-title');
+      const desc = document.getElementById('card-dish-desc');
+      const price = document.getElementById('card-dish-price');
+      const waBtn = document.getElementById('card-wa-btn');
 
-<script src="./script.js"></script>
+      // Update pill classes
+      const activeClass = "px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 bg-amber-gold text-black font-bold shadow-[0_2px_14px_rgba(245,158,11,0.45)] hover:scale-105 active:scale-95";
+      const inactiveClass = "px-5 py-2 rounded-full font-label-md text-[13px] transition-all duration-300 text-zinc-400 hover:text-white hover:bg-white/5 active:scale-95";
+
+      if (tabDestacados) tabDestacados.className = inactiveClass;
+      if (tabHamburguesas) tabHamburguesas.className = inactiveClass;
+      if (tabPrincipales) tabPrincipales.className = inactiveClass;
+      if (tabBebidas) tabBebidas.className = inactiveClass;
+
+      if (category === 'destacados') {
+        if (tabDestacados) tabDestacados.className = activeClass;
+        categoryLabel.textContent = "ESPECIALIDADES DESTACADAS";
+        title.textContent = "Hamburguesa Artesanal Punto Cheff";
+        desc.textContent = "Blend de carne vacuna seleccionada a fuego vivo, queso cheddar fundido, panceta crocante y pan brioche artesanal tostado a la manteca. Servida con papas rústicas al romero.";
+        price.textContent = "Gs. 50.000";
+        waBtn.href = "https://wa.me/?text=Hola%20Punto%20Cheff%2C%20quisiera%20pedir%20este%20plato%3A%20Hamburguesa%20Artesanal%20Punto%20Cheff%20(Gs.%2050.000)";
+      } else if (category === 'hamburguesas') {
+        if (tabHamburguesas) tabHamburguesas.className = activeClass;
+        categoryLabel.textContent = "LÍNEA BURGERS ARTESANALES";
+        title.textContent = "Hamburguesa Clásica Doble Cheddar";
+        desc.textContent = "Doble medallón 120g smash, cuádruple cheddar madurado, cebolla caramelizada al malbec y salsa especial Punto Cheff con panceta crocante.";
+        price.textContent = "Gs. 55.000";
+        waBtn.href = "https://wa.me/?text=Hola%20Punto%20Cheff%2C%20quisiera%20pedir%20este%20plato%3A%20Hamburguesa%20Clásica%20Doble%20Cheddar%20(Gs.%2055.000)";
+      } else if (category === 'principales') {
+        if (tabPrincipales) tabPrincipales.className = activeClass;
+        categoryLabel.textContent = "CORTES & PRINCIPALES";
+        title.textContent = "Ojo de Bife con Rústicas";
+        desc.textContent = "Corte seleccionado a las brasas de quebracho con chimichurri gourmet de la casa, vegetales grillados y papas a la crema con hierbas frescas.";
+        price.textContent = "Gs. 75.000";
+        waBtn.href = "https://wa.me/?text=Hola%20Punto%20Cheff%2C%20quisiera%20pedir%20este%20plato%3A%20Ojo%20de%20Bife%20con%20Rústicas%20(Gs.%2075.000)";
+      } else if (category === 'bebidas') {
+        if (tabBebidas) tabBebidas.className = activeClass;
+        categoryLabel.textContent = "BEBIDAS & POSTRES DE AUTOR";
+        title.textContent = "Volcán de Chocolate con Cerveza Artesanal";
+        desc.textContent = "Volcán tibio de chocolate belga 70% con corazón líquido, helado de crema artesanal maridado con cerveza IPA artesanal bien helada.";
+        price.textContent = "Gs. 38.000";
+        waBtn.href = "https://wa.me/?text=Hola%20Punto%20Cheff%2C%20quisiera%20pedir%20este%20postre%3A%20Volcán%20de%20Chocolate%20(Gs.%2038.000)";
+      }
+    }
+
+    function openArModal(title, price) {
+      const modal = document.getElementById('ar-modal');
+      const panel = document.getElementById('modal-panel');
+      const modalTitle = document.getElementById('modal-dish-title');
+      const modalPrice = document.getElementById('modal-dish-price');
+      const loader = document.getElementById('modal-loading-state');
+      const modalWa = document.getElementById('modal-wa-button');
+      
+      const currentTitle = title || document.getElementById('card-dish-title').textContent.trim();
+      const currentPrice = price || document.getElementById('card-dish-price').textContent.trim();
+
+      modalTitle.textContent = currentTitle;
+      modalPrice.textContent = currentPrice;
+      modalWa.href = "https://wa.me/?text=" + encodeURIComponent("Hola Punto Cheff, quisiera pedir este plato: " + currentTitle + " (" + currentPrice + ")");
+
+      modal.classList.remove('pointer-events-none', 'opacity-0');
+      modal.classList.add('opacity-100');
+      panel.classList.remove('scale-95');
+      panel.classList.add('scale-100');
+
+      loader.style.opacity = '1';
+      loader.style.display = 'flex';
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 400);
+      }, 650);
+    }
+
+    function closeArModal() {
+      const modal = document.getElementById('ar-modal');
+      const panel = document.getElementById('modal-panel');
+
+      panel.classList.remove('scale-100');
+      panel.classList.add('scale-95');
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      setTimeout(() => {
+        modal.classList.add('pointer-events-none');
+      }, 250);
+    }
+
+    function triggerArLaunch() {
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        alert("✨ Abriendo visor de Realidad Aumentada Quick Look en Safari. Apuntá hacia la mesa para colocar el plato de Punto Cheff.");
+      } else {
+        alert("✨ Iniciando WebXR ARCore de Punto Cheff. Apuntá hacia la mesa y mové el celular despacio para detectar la superficie.");
+      }
+    }
+
+    // Interactive 3D drag-to-rotate interaction for desktop & mobile
+    (function init3DViewer() {
+      const viewport = document.getElementById('viewport-3d');
+      const model = document.getElementById('burger-3d-model');
+      if (!viewport || !model) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let currentRotation = 0;
+
+      function onStart(e) {
+        isDragging = true;
+        startX = e.pageX || (e.touches && e.touches[0].pageX);
+      }
+
+      function onMove(e) {
+        if (!isDragging) return;
+        const x = e.pageX || (e.touches && e.touches[0].pageX);
+        const delta = x - startX;
+        currentRotation += delta * 0.8;
+        startX = x;
+        model.style.transform = 'rotateY(' + currentRotation + 'deg)';
+      }
+
+      function onEnd() {
+        isDragging = false;
+      }
+
+      viewport.addEventListener('mousedown', onStart);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onEnd);
+
+      viewport.addEventListener('touchstart', onStart, { passive: true });
+      window.addEventListener('touchmove', onMove, { passive: true });
+      window.addEventListener('touchend', onEnd);
+    })();
+</script>
 </body></html>

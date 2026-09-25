@@ -146,6 +146,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- TABS LOGIC ---
+    const tabNew = document.getElementById('tab-new');
+    const tabList = document.getElementById('tab-list');
+    const sectionForm = document.getElementById('section-form');
+    const sectionList = document.getElementById('section-list');
+    const formTitle = document.getElementById('form-title');
+
+    function switchTab(tab) {
+        if (tab === 'new') {
+            tabNew.classList.add('active');
+            tabNew.style.background = 'rgba(99, 102, 241, 0.2)';
+            tabList.classList.remove('active');
+            tabList.style.background = 'transparent';
+            sectionForm.style.display = 'block';
+            sectionList.style.display = 'none';
+        } else {
+            tabList.classList.add('active');
+            tabList.style.background = 'rgba(99, 102, 241, 0.2)';
+            tabNew.classList.remove('active');
+            tabNew.style.background = 'transparent';
+            sectionList.style.display = 'block';
+            sectionForm.style.display = 'none';
+        }
+    }
+
+    tabNew.addEventListener('click', () => switchTab('new'));
+    tabList.addEventListener('click', () => switchTab('list'));
+
     function populateForm(dish) {
         dishIdInput.value = dish.id;
         document.getElementById('dish-name').value = dish.nombre;
@@ -158,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnSave.innerHTML = '<i class="ph ph-floppy-disk"></i> Actualizar Plato';
         btnCancel.classList.remove('hidden');
+        formTitle.textContent = "Editar Plato: " + dish.nombre;
+        
+        switchTab('new');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -166,6 +197,14 @@ document.addEventListener('DOMContentLoaded', () => {
         dishIdInput.value = "";
         btnSave.innerHTML = '<i class="ph ph-check-circle"></i> Guardar y Publicar';
         btnCancel.classList.add('hidden');
+        formTitle.textContent = "Añadir Nuevo Plato";
+        ['drop-img', 'drop-glb', 'drop-usdz'].forEach(boxId => {
+            const box = document.getElementById(boxId);
+            box.classList.remove('has-file');
+            if(boxId === 'drop-img') { box.querySelector('i').className = 'ph ph-image'; box.querySelector('span').textContent = 'Foto del Plato'; }
+            if(boxId === 'drop-glb') { box.querySelector('i').className = 'ph ph-cube'; box.querySelector('span').textContent = 'Modelo 3D (Android)'; }
+            if(boxId === 'drop-usdz') { box.querySelector('i').className = 'ph ph-apple-logo'; box.querySelector('span').textContent = 'Modelo 3D (iOS)'; }
+        });
     });
 
     form.addEventListener('submit', async (e) => {
@@ -258,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             form.reset();
             dishIdInput.value = "";
             btnCancel.classList.add('hidden');
+            formTitle.textContent = "Añadir Nuevo Plato";
             ['drop-img', 'drop-glb', 'drop-usdz'].forEach(boxId => {
                 const box = document.getElementById(boxId);
                 box.classList.remove('has-file');
