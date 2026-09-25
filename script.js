@@ -75,8 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!respuesta.ok) throw new Error("Error en la conexión con la carta");
             
             let platos = await respuesta.json();
-            // Filtrar para mostrar solo la naranja
-            platos = platos.filter(plato => plato.nombre.toLowerCase().includes('naranja'));
+            // Filtrar para mostrar la hamburguesa con los nuevos modelos
+            platos = platos.filter(plato => plato.nombre.toLowerCase().includes('hamburguesa'));
+            platos.forEach(plato => {
+                plato.modelo_glb_url = "https://pub-a0c3e42adcc7481ca1b17d7e005659b6.r2.dev/hamburguesa.glb";
+                plato.modelo_usdz_url = "https://pub-a0c3e42adcc7481ca1b17d7e005659b6.r2.dev/hamburguesa.usdz";
+            });
             renderizarMenu(platos);
         } catch (error) {
             console.error("Error al obtener el menú:", error);
