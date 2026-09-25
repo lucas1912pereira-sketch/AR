@@ -286,7 +286,12 @@ ${plato.es_ar === 1 ? `
             arViewer.setAttribute('shadow-softness', '0.5');
             arViewer.setAttribute('exposure', '1');
             arViewer.setAttribute('loading', 'lazy');
-            arViewer.setAttribute('interaction-prompt', 'none');
+            // Quitamos 'none' para que exija escanear la mesa y construya una superficie firme
+            arViewer.setAttribute('interaction-prompt', 'auto');
+            arViewer.setAttribute('interaction-prompt-style', 'basic');
+            // Bloqueamos interacciones de reposicionamiento accidental (que causan saltos)
+            arViewer.setAttribute('disable-pan', '');
+            arViewer.setAttribute('disable-tap', '');
 
             // Listeners de eventos (Solo se agregan 1 vez)
             arViewer.addEventListener('ar-status', (event) => {
