@@ -252,9 +252,10 @@ ${plato.es_ar === 1 ? `
             panel.classList.add('scale-100');
         }
 
-        // APAGAR EL SHADER DE FONDO PARA NO EXPLOTAR LA GPU
+        // APAGAR EL SHADER DE FONDO PARA NO EXPLOTAR LA GPU (memoria)
         const shaderBg = document.getElementById('shader-canvas-ANIMATION_12');
         if (shaderBg) shaderBg.style.display = 'none';
+        window.isShaderPaused = true;
 
         // 3. Llenar los datos del plato en el header del modal
         if (modalTitle) modalTitle.textContent = nombre;
@@ -388,6 +389,7 @@ ${plato.es_ar === 1 ? `
             // PRENDER EL SHADER DE FONDO NUEVAMENTE
             const shaderBg = document.getElementById('shader-canvas-ANIMATION_12');
             if (shaderBg) shaderBg.style.display = 'block';
+            window.isShaderPaused = false;
             setTimeout(() => {
                 modal3D.classList.add('pointer-events-none');
                 if (arViewer) {
