@@ -512,6 +512,12 @@ model-viewer {
     --poster-color: transparent;
     /* touch-action: none es importante para que el usuario pueda interactuar con el 3D sin hacer scroll en la página */
     touch-action: none; 
+    outline: none;
+}
+
+model-viewer:focus,
+model-viewer:focus-visible {
+    outline: none;
 }
 
 /* Acciones inferiores */

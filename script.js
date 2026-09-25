@@ -186,7 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
             arViewer.setAttribute('ar-scale', 'auto');
             arViewer.setAttribute('ar-placement', 'floor');
             arViewer.setAttribute('camera-controls', '');
-            arViewer.setAttribute('disable-tap', '');
+            arViewer.setAttribute('disable-pan', '');
+            // Bloquear la rotación vertical (arriba/abajo) en 75 grados para que solo gire izquierda/derecha
+            arViewer.setAttribute('min-camera-orbit', 'auto 75deg auto');
+            arViewer.setAttribute('max-camera-orbit', 'auto 75deg auto');
             arViewer.setAttribute('auto-rotate', '');
             arViewer.setAttribute('rotation-per-second', '20deg');
             arViewer.setAttribute('bounds', 'tight');
