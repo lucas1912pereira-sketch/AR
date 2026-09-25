@@ -4,6 +4,7 @@ const API_URL = "https://menu-api.lucas1912pereira.workers.dev";
 document.addEventListener('DOMContentLoaded', () => {
     const menuContainer = document.getElementById('menu-container');
     const modal3D = document.getElementById('ar-modal');
+    let arViewer = null;
     const modelLoader = document.getElementById('modal-loading-state');
     
     const closeModalBtn = document.getElementById('close-modal-3d');
@@ -265,21 +266,98 @@ ${plato.es_ar === 1 ? `
             btnModalDelivery.onclick = () => pedirDelivery(nombre, precio);
         }
 
-        const imgPlaceholder = document.querySelector('#burger-3d-model img');
-        if (imgPlaceholder && imagenUrl) {
-            imgPlaceholder.src = imagenUrl;
+        const container = document.getElementById('viewport-3d');
+        
+        // REVERSIÓN: Usar un solo visor y reusarlo es MEJOR para evitar el límite de contextos WebGL (que causa la pantalla negra)
+        if (!arViewer) {
+            arViewer = document.createElement('model-viewer');
+            arViewer.id = 'ar-viewer';
+            arViewer.setAttribute('ar', '');
+            // SOLO WEBXR y Quick Look (evita Scene Viewer nativo de Google)
+            arViewer.setAttribute('ar-modes', 'webxr quick-look');
+            arViewer.setAttribute('ar-scale', 'fixed');
+            arViewer.setAttribute('ar-placement', 'floor');
+            arViewer.setAttribute('camera-controls', '');
+            arViewer.setAttribute('auto-rotate', '');
+            arViewer.setAttribute('rotation-per-second', '20deg');
+            arViewer.setAttribute('bounds', 'tight');
+            arViewer.setAttribute('environment-image', 'neutral');
+            arViewer.setAttribute('shadow-intensity', '1.5');
+            arViewer.setAttribute('shadow-softness', '0.5');
+            arViewer.setAttribute('exposure', '1');
+            arViewer.setAttribute('loading', 'lazy');
+            arViewer.setAttribute('interaction-prompt', 'none');
+
+            // Listeners de eventos (Solo se agregan 1 vez)
+            arViewer.addEventListener('ar-status', (event) => {
+                if (event.detail.status === 'failed') {
+                    console.warn('AR no soportado o fallido en este equipo');
+                    alert("No se pudo iniciar la cámara AR en este navegador. Probá abriendo el enlace directamente en Safari o Chrome.");
+                }
+                if (event.detail.status === 'session-started') {
+                    // Ocultar del DOM (ahorra cálculos de composición visual del navegador)
+                    arViewer.style.visibility = 'hidden';
+                }
+                if (event.detail.status === 'not-presenting') {
+                    arViewer.style.visibility = 'visible';
+                }
+            });
+
+            arViewer.addEventListener('load', () => {
+                if (modelLoader) {
+                    modelLoader.style.opacity = '0';
+                    setTimeout(() => {
+                        modelLoader.style.display = 'none';
+                    }, 400);
+                }
+            });
+
+            arViewer.addEventListener('error', (event) => {
+                console.error('Error cargando el modelo 3D:', event);
+                if (modelLoader) {
+                    const loaderText = modelLoader.querySelector('p');
+                    if (loaderText) loaderText.textContent = "Error al cargar el modelo 3D.";
+                    const spinner = modelLoader.querySelector('div');
+                    if (spinner) spinner.style.display = 'none';
+                }
+            });
+
+            container.innerHTML = ''; // Clear placeholder
+            container.appendChild(arViewer);
         }
 
+        // Actualizar datos dinámicos para el plato actual
+        arViewer.setAttribute('alt', `Modelo 3D de ${nombre}`);
+        
+        if (imagenUrl) {
+            arViewer.setAttribute('poster', imagenUrl);
+        } else {
+            arViewer.removeAttribute('poster');
+        }
+        
+        // Pequeño delay para que el modal termine de hacerse visible antes de cargar los pesos pesados
         setTimeout(() => {
-            if (modelLoader) {
-                modelLoader.style.opacity = '0';
-                setTimeout(() => {
-                    modelLoader.style.display = 'none';
-                }, 400);
+            if (arViewer) {
+                // Si el modelo ya es el mismo y está cargado, ocultar el loader enseguida
+                if (arViewer.getAttribute('src') === modeloUrl) {
+                    if (modelLoader) modelLoader.style.display = 'none';
+                } else {
+                    arViewer.setAttribute('src', modeloUrl);
+                }
+                
+                if (usdzUrl) {
+                    arViewer.setAttribute('ios-src', usdzUrl);
+                } else {
+                    arViewer.removeAttribute('ios-src');
+                }
+                
+                if (typeof arViewer.dismissPoster === 'function') {
+                    arViewer.dismissPoster();
+                }
             }
-        }, 500);
+        }, 150);
 
-        // 6. Activar botón AR explícito
+        // 6. Activar botón AR explícito (No fuerza apertura invasiva)
         if (btnActivateAR) {
             btnActivateAR.onclick = () => {
                 const banner = document.getElementById('banner-abrir-safari');
@@ -287,32 +365,11 @@ ${plato.es_ar === 1 ? `
                 
                 if (!isMobile) {
                     alert("Para proyectar el plato en tu mesa real, necesitas abrir este menú desde tu teléfono móvil.");
-                } else if (enInAppBrowser) {
-                    alert("El visor AR está bloqueado en este navegador. Por favor, seguí las instrucciones del banner superior para abrir el menú en tu navegador principal (Safari/Chrome).");
                 } else {
-                    lanzarAR(modeloUrl, usdzUrl, nombre);
+                    // Solo lanza la cámara de AR cuando el usuario hace clic aquí
+                    arViewer.activateAR();
                 }
             };
-        }
-    }
-
-    function lanzarAR(modeloUrl, usdzUrl, nombre) {
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-            if (!usdzUrl) {
-                alert("El modelo AR para iOS no está disponible.");
-                return;
-            }
-            const url = usdzUrl + '#allowsContentScaling=0';
-            const a = document.createElement('a');
-            a.setAttribute('rel', 'ar');
-            a.setAttribute('href', url);
-            const img = document.createElement('img');
-            a.appendChild(img);
-            a.click();
-        } else {
-            const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(modeloUrl)}&mode=ar_only&title=${encodeURIComponent(nombre)}&resizable=false#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-            window.location.href = intentUrl;
         }
     }
 
@@ -339,6 +396,10 @@ ${plato.es_ar === 1 ? `
             window.isShaderPaused = false;
             setTimeout(() => {
                 modal3D.classList.add('pointer-events-none');
+                if (arViewer) {
+                    arViewer.removeAttribute('src');
+                    arViewer.removeAttribute('ios-src');
+                }
             }, 250);
         });
     }
