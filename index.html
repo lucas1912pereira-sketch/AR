@@ -358,7 +358,7 @@ void main() {
 <div class="relative w-full aspect-[4/3] rounded-xl bg-black/80 border border-white/10 overflow-hidden flex flex-col items-center justify-center shadow-inner group/viewer">
 <!-- Video Container (Initially hidden) -->
 <div class="absolute inset-0 z-30 hidden bg-black items-center justify-center" id="modal-video-container">
-   <video id="modal-video-player" class="w-full h-full object-contain" controls>
+   <video id="modal-video-player" class="w-full h-full object-contain pointer-events-none" playsinline loop muted>
       <source src="./Animaciones/kling_20260926_VIDEO_Take_Image_2232_0.mp4" type="video/mp4">
    </video>
    <button id="btn-back-to-3d" class="absolute top-4 left-4 bg-black/70 text-white p-2 rounded-full flex items-center justify-center hover:bg-white/20 transition-all border border-white/20 z-40" aria-label="Volver al modelo 3D">
