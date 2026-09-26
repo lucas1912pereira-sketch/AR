@@ -32,26 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const inAppRegex = /FBAN|FBAV|Instagram|WhatsApp|Line|Messenger/i;
         
         if (inAppRegex.test(ua)) {
-            const banner = document.getElementById('banner-abrir-safari');
+            const banner = document.getElementById('ar-banner');
             
             if (esAndroid) {
                 // En Android, intentamos forzar la apertura en Chrome (WebXR no funciona en WebView)
                 const currentUrl = window.location.href.replace(/^https?:\/\//, '');
-                window.location.href = `intent://${currentUrl}#Intent;scheme=https;end;`;
+                window.location.href = `intent://${currentUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
                 
                 if (banner) {
-                    banner.querySelector('p').innerHTML = "⚠️ Tu navegador actual bloquea la Realidad Aumentada. Tocá los 3 puntos arriba a la derecha y seleccioná 'Abrir en el navegador'.";
-                    banner.classList.remove('hidden');
+                    const p = banner.querySelector('p');
+                    if (p) p.innerHTML = "⚠️ WhatsApp bloquea la cámara 3D. Tocá los 3 puntos arriba a la derecha y seleccioná 'Abrir en Chrome'.";
+                    banner.style.display = 'block';
                 }
             } else if (esIOS) {
-                // En iOS, WhatsApp SÍ soporta AR Quick Look de forma nativa. 
-                // Solo mostramos el cartel de advertencia para Instagram y Facebook que lo bloquean.
-                const esBloqueadorFuerteIOS = /FBAN|FBAV|Instagram/i.test(ua);
+                // En iOS, el WebView de WhatsApp/Instagram suele bloquear AR Quick Look.
+                // Mostramos el aviso para que abran en Safari.
+                const esBloqueadorFuerteIOS = /FBAN|FBAV|Instagram|WhatsApp/i.test(ua);
                 if (esBloqueadorFuerteIOS) {
                     esInAppBrowserIOS = true;
                     if (banner) {
-                        banner.querySelector('p').innerHTML = "⚠️ Instagram/Facebook bloquean el modo AR. Tocá el ícono inferior (brújula) y seleccioná 'Abrir en Safari'.";
-                        banner.classList.remove('hidden');
+                        const p = banner.querySelector('p');
+                        if (p) p.innerHTML = "⚠️ WhatsApp/Instagram bloquean la cámara 3D. Toca el ícono inferior de Safari (brújula) para abrir la carta y ver en AR.";
+                        banner.style.display = 'block';
                     }
                 }
             }
