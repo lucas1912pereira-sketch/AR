@@ -356,6 +356,15 @@ void main() {
 </div>
 <!-- 3D Viewport Visual Simulator -->
 <div class="relative w-full aspect-[4/3] rounded-xl bg-black/80 border border-white/10 overflow-hidden flex flex-col items-center justify-center shadow-inner group/viewer">
+<!-- Video Container (Initially hidden) -->
+<div class="absolute inset-0 z-30 hidden bg-black items-center justify-center" id="modal-video-container">
+   <video id="modal-video-player" class="w-full h-full object-contain" controls>
+      <source src="./Animaciones/kling_20260926_VIDEO_Take_Image_2232_0.mp4" type="video/mp4">
+   </video>
+   <button id="btn-back-to-3d" class="absolute top-4 left-4 bg-black/70 text-white p-2 rounded-full flex items-center justify-center hover:bg-white/20 transition-all border border-white/20 z-40" aria-label="Volver al modelo 3D">
+      <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+   </button>
+</div>
 <!-- Loading State Overlay -->
 <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#0c0c0e]/95 z-20 transition-opacity duration-500" id="modal-loading-state">
 <div class="w-12 h-12 rounded-full border-2 border-amber-gold/20 border-t-amber-gold mb-3"></div>
@@ -365,6 +374,12 @@ void main() {
 </div>
 <!-- Active 360 Spin Simulation View -->
 <div class="relative z-10 w-full h-full flex items-center justify-center select-none cursor-grab active:cursor-grabbing p-4" id="viewport-3d">
+<!-- Animation Button Overlay -->
+<button id="btn-play-animation" class="absolute top-4 right-4 bg-black/80 border border-amber-gold/30 text-amber-gold px-3.5 py-1.5 rounded-full font-label-sm font-bold flex items-center gap-1.5 hover:bg-white/10 transition-all z-40 shadow-lg backdrop-blur-sm">
+   <span class="material-symbols-outlined text-[18px]">play_circle</span>
+   <span>Animación</span>
+</button>
+
 <div class="relative w-64 h-56 transition-transform duration-100 ease-out flex items-center justify-center" id="burger-3d-model">
 <img alt="Proyección 3D Hamburguesa" class="w-56 h-48 object-cover rounded-full shadow-[0_20px_45px_rgba(0,0,0,0.8)] ring-2 ring-amber-gold/40 filter contrast-105" src="https://lh3.googleusercontent.com/aida/AEtjO1UI-060NZdHXYTOl8FTzPtscmiKHDGuDvw86BAlNgyVylMLo3svXf8KP9VqrELFJiaD3Ry1k20sE0ic1Pt4QZF8ljPDn6Pu5Wm8gOFH91F_NQP7CRwg0D6Asf_5zosqWZouH2IskzyivjZkF5rHQkjcE5-KdhCpzs0-yJ6iuHDqqqPdsSm5bVxjx3Me2LA6GZsDa80oLwhHFPuQKzIls9zrIAYeNdUe_ZPmLvuerR4vfFpwtXvGbrlc-w"/>
 <!-- Floor Virtual Shadow / AR Plane Anchor -->
@@ -377,7 +392,7 @@ void main() {
 <span class="material-symbols-outlined text-[14px] text-amber-gold">360</span>
 <span>Arrastra para girar 360°</span>
 </div>
-<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/90 text-amber-gold font-label-sm text-[11px] font-bold border border-amber-gold/40">
+<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/90 text-amber-gold font-label-sm text-[11px] font-bold border border-amber-gold/40 hidden md:block">
                   Escala Real 1:1
                 </div>
 </div>
@@ -395,7 +410,7 @@ void main() {
 <span class="material-symbols-outlined text-[20px]">view_in_ar</span>
 <span>Proyectar en tu mesa (AR)</span>
 </button>
-<p class="font-body-sm text-[11px] text-zinc-400 text-center leading-normal px-2">
+<p class="font-body-sm text-[11px] text-zinc-400 text-center leading-normal px-2 mb-1">
                 Se solicitará permiso para abrir el sensor de cámara y renderizar el modelo a escala.
               </p>
 </div>

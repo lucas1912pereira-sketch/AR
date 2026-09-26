@@ -416,6 +416,36 @@ ${plato.es_ar === 1 ? `
         window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
+    const modalVideoContainer = document.getElementById('modal-video-container');
+    const modalVideoPlayer = document.getElementById('modal-video-player');
+    const btnBackTo3d = document.getElementById('btn-back-to-3d');
+    const viewport3d = document.getElementById('viewport-3d');
+    const btnPlayAnimation = document.getElementById('btn-play-animation');
+
+    if (btnPlayAnimation && modalVideoContainer && modalVideoPlayer && btnBackTo3d && viewport3d) {
+        btnPlayAnimation.addEventListener('click', () => {
+            // Regresar la cámara 3D a su posición inicial suavemente
+            if (arViewer) {
+                arViewer.cameraOrbit = "0deg 75deg 105%"; // o "auto auto auto"
+            }
+            
+            // Damos unos milisegundos para que el usuario perciba el inicio de la rotación
+            setTimeout(() => {
+                viewport3d.style.display = 'none';
+                modalVideoContainer.classList.remove('hidden');
+                modalVideoContainer.classList.add('flex');
+                modalVideoPlayer.play();
+            }, 300);
+        });
+
+        btnBackTo3d.addEventListener('click', () => {
+            modalVideoPlayer.pause();
+            modalVideoContainer.classList.add('hidden');
+            modalVideoContainer.classList.remove('flex');
+            viewport3d.style.display = 'flex';
+        });
+    }
+
     if (closeModalBtn) {
         closeModalBtn.addEventListener('click', () => {
             if (!modal3D) return;
@@ -431,6 +461,20 @@ ${plato.es_ar === 1 ? `
             const shaderBg = document.getElementById('shader-canvas-ANIMATION_12');
             if (shaderBg) shaderBg.style.display = 'block';
             window.isShaderPaused = false;
+            
+            // Pausar y resetear el video
+            if (modalVideoPlayer) {
+                modalVideoPlayer.pause();
+                modalVideoPlayer.currentTime = 0;
+            }
+            if (modalVideoContainer) {
+                modalVideoContainer.classList.add('hidden');
+                modalVideoContainer.classList.remove('flex');
+            }
+            if (viewport3d) {
+                viewport3d.style.display = 'flex';
+            }
+
             setTimeout(() => {
                 modal3D.classList.add('pointer-events-none');
                 if (arViewer) {
@@ -444,3 +488,4 @@ ${plato.es_ar === 1 ? `
     // Iniciar app
     cargarMenu();
 });
+
