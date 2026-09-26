@@ -400,17 +400,13 @@ ${plato.es_ar === 1 ? `
 
         // 6. Activar botón AR explícito (No fuerza apertura invasiva)
         if (btnActivateAR) {
-            btnActivateAR.onclick = () => {
-                const banner = document.getElementById('banner-abrir-safari');
-                const enInAppBrowser = banner && !banner.classList.contains('hidden');
-                
-                if (!isMobile) {
-                    alert("Para proyectar el plato en tu mesa real, necesitas abrir este menú desde tu teléfono móvil.");
-                } else {
-                    // Solo lanza la cámara de AR cuando el usuario hace clic aquí
-                    arViewer.activateAR();
-                }
-            };
+            if (!btnActivateAR.hasAttribute('slot')) {
+                btnActivateAR.setAttribute('slot', 'ar-button');
+                btnActivateAR.classList.add('absolute', 'bottom-4', 'left-1/2', '-translate-x-1/2', 'w-[calc(100%-2rem)]', 'z-[100]');
+                arViewer.appendChild(btnActivateAR);
+            }
+            // Eliminar el manejador onclick para que model-viewer se encargue nativamente (evita bloqueo de Safari)
+            btnActivateAR.onclick = null;
         }
     }
 
