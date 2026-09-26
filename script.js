@@ -398,15 +398,37 @@ ${plato.es_ar === 1 ? `
             }
         }, 150);
 
-        // 6. Activar botón AR explícito (No fuerza apertura invasiva)
+        // 6. Activar botón AR explícito con método a prueba de balas para iOS
         if (btnActivateAR) {
-            if (!btnActivateAR.hasAttribute('slot')) {
-                btnActivateAR.setAttribute('slot', 'ar-button');
-                btnActivateAR.classList.add('absolute', 'bottom-4', 'left-1/2', '-translate-x-1/2', 'w-[calc(100%-2rem)]', 'z-[100]');
-                arViewer.appendChild(btnActivateAR);
+            // Asegurarnos de limpiar modificaciones anteriores (por si no recargó la página)
+            if (btnActivateAR.hasAttribute('slot')) {
+                btnActivateAR.removeAttribute('slot');
+                btnActivateAR.classList.remove('absolute', 'bottom-4', 'left-1/2', '-translate-x-1/2', 'w-[calc(100%-2rem)]', 'z-[100]');
             }
-            // Eliminar el manejador onclick para que model-viewer se encargue nativamente (evita bloqueo de Safari)
-            btnActivateAR.onclick = null;
+
+            btnActivateAR.onclick = (e) => {
+                const currentUsdz = arViewer.getAttribute('ios-src');
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+                if (isIOS && currentUsdz) {
+                    // Método nativo 100% confiable para forzar AR Quick Look en Safari iOS
+                    e.preventDefault();
+                    const a = document.createElement('a');
+                    a.setAttribute('rel', 'ar');
+                    a.setAttribute('href', currentUsdz);
+                    
+                    // Apple exige que el enlace tenga un elemento hijo para funcionar
+                    const img = document.createElement('img');
+                    a.appendChild(img);
+                    
+                    document.body.appendChild(a); // Añadir temporalmente al DOM
+                    a.click();
+                    document.body.removeChild(a); // Limpiar
+                } else {
+                    // Fallback para Android (ARCore/WebXR) o cuando no hay USDZ
+                    arViewer.activateAR();
+                }
+            };
         }
     }
 
@@ -432,6 +454,7 @@ ${plato.es_ar === 1 ? `
             // Damos unos milisegundos para que el usuario perciba el inicio de la rotación
             setTimeout(() => {
                 viewport3d.style.display = 'none';
+                btnPlayAnimation.style.display = 'none'; // Ocultar el botón también
                 modalVideoContainer.classList.remove('hidden');
                 modalVideoContainer.classList.add('flex');
                 modalVideoPlayer.play();
@@ -443,6 +466,7 @@ ${plato.es_ar === 1 ? `
             modalVideoContainer.classList.add('hidden');
             modalVideoContainer.classList.remove('flex');
             viewport3d.style.display = 'flex';
+            btnPlayAnimation.style.display = 'flex'; // Mostrar el botón nuevamente
         });
     }
 
@@ -473,6 +497,9 @@ ${plato.es_ar === 1 ? `
             }
             if (viewport3d) {
                 viewport3d.style.display = 'flex';
+            }
+            if (btnPlayAnimation) {
+                btnPlayAnimation.style.display = 'flex';
             }
 
             setTimeout(() => {
